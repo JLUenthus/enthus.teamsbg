@@ -8,11 +8,11 @@ Erstelle in wenigen Sekunden personalisierte Hintergrundbilder mit Name, Rolle u
 Live-Vorschau (WYSIWYG)
 Export als PNG (1920 × 1080 px)
 Automatische Skalierung langer Namen
-Auswahl von Hintergrundbildern (inkl. Mini-Vorschau)
+Hintergrundauswahl mit Mini-Vorschau
 Upload eigener Hintergründe
 Team-/Brand-Anzeige (z. B. enthus.blue)
 Dark Mode
-Changelog im UI integriert
+Integriertes Changelog
 🗺️ Roadmap
 ✅ Bereits umgesetzt
 v0.9.3
@@ -65,7 +65,8 @@ Vorschau prüfen
 Bild herunterladen
 📌 Hinweis
 
-Für den Einsatz in Unternehmensumgebungen (z. B. SharePoint) kann es Einschränkungen beim direkten Laden von HTML-Dateien geben. In diesem Fall wird empfohlen, das Tool extern zu hosten und per Embed einzubinden.
+Für den Einsatz in Unternehmensumgebungen (z. B. SharePoint) kann es Einschränkungen beim direkten Laden von HTML-Dateien geben.
+In diesem Fall wird empfohlen, das Tool extern zu hosten und per Embed einzubinden.
 
 📄 Lizenz
 
