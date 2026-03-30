@@ -577,6 +577,117 @@
         }
 
         /* ============================================================
+           DISCLAIMER OVERLAY                          <!-- DISCLAIMER START -->
+        ============================================================ */
+
+        #disclaimer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            animation: overlayFadeIn 0.22s ease;
+        }
+
+        .disclaimer-modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 48px rgba(0, 15, 64, 0.32);
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: disclaimerPopIn 0.25s cubic-bezier(0.34, 1.3, 0.64, 1);
+        }
+        @keyframes disclaimerPopIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .disclaimer-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px 14px;
+            border-bottom: 1.5px solid var(--border);
+        }
+        .disclaimer-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--deep-blue);
+            letter-spacing: -0.01em;
+        }
+        .disclaimer-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--deep-blue-light);
+            transition: background 0.14s, color 0.14s;
+            line-height: 1;
+        }
+        .disclaimer-close:hover {
+            background: #eef0f8;
+            color: var(--deep-blue);
+        }
+
+        .disclaimer-body {
+            padding: 20px 22px;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: var(--deep-blue);
+        }
+        .disclaimer-body p + p {
+            margin-top: 12px;
+        }
+
+        .disclaimer-footer {
+            padding: 14px 22px 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .disclaimer-btn-confirm {
+            background: var(--deep-blue);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 10px 22px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.14s, transform 0.1s;
+        }
+        .disclaimer-btn-confirm:hover {
+            background: #001a6e;
+            transform: translateY(-1px);
+        }
+        .disclaimer-btn-confirm:active {
+            transform: translateY(0);
+        }
+
+        /* Dark-Mode-Anpassungen */
+        body.dark .disclaimer-modal             { background: #121a3a; }
+        body.dark .disclaimer-header            { border-bottom-color: var(--border); }
+        body.dark .disclaimer-title             { color: #e8eaf6; }
+        body.dark .disclaimer-body              { color: #b0bad8; }
+        body.dark .disclaimer-close             { color: #7b8fcf; }
+        body.dark .disclaimer-close:hover       { background: #1e2d5a; color: #e8eaf6; }
+        body.dark .disclaimer-btn-confirm       { background: var(--smart-yellow); color: var(--deep-blue); }
+        body.dark .disclaimer-btn-confirm:hover { background: #c8ec00; }
+                                                               /* DISCLAIMER END -->  */
+
+        /* ============================================================
            DARK MODE
         ============================================================ */
 
@@ -936,6 +1047,27 @@
         </button>
     </footer>
 
+    <!-- DISCLAIMER START ======================================
+         DISCLAIMER OVERLAY
+    ======================================================= -->
+    <div id="disclaimer-overlay" role="dialog" aria-modal="true" aria-label="Hinweis" style="display:none;">
+        <div class="disclaimer-modal">
+            <div class="disclaimer-header">
+                <span class="disclaimer-title">Hinweis</span>
+                <button class="disclaimer-close" id="btn-disclaimer-close" aria-label="Schließen">&times;</button>
+            </div>
+            <div class="disclaimer-body">
+                <p>Dieses Tool wurde eigenständig und größtenteils in der Freizeit zu Lern- und Demonstrationszwecken entwickelt.</p>
+                <p>Es handelt sich aktuell nicht um ein offiziell freigegebenes Produkt der enthus GmbH.</p>
+                <p>Das Tool wird kontinuierlich weiterentwickelt und optimiert. Eine mögliche offizielle Abstimmung und Bereitstellung erfolgt zu einem späteren Zeitpunkt.</p>
+            </div>
+            <div class="disclaimer-footer">
+                <button class="disclaimer-btn-confirm" id="btn-disclaimer-confirm">Habe ich verstanden</button>
+            </div>
+        </div>
+    </div>
+    <!-- DISCLAIMER END ======================================= -->
+
     <!-- ====================================================
          CHANGELOG OVERLAY
     ==================================================== -->
@@ -953,6 +1085,7 @@
             <li>Sonderzeichen und Leerzeichen werden korrekt bereinigt</li>
             <li>Verbessertes Fehlerhandling beim Download</li>
             <li>Optimierungen für Nutzung in SharePoint / Browser</li>
+            <li>Transparenz-Hinweis ergänzt (Projektstatus & Einordnung)</li>
             </ul>
             <h3>v0.9.2</h3>
             <ul>
@@ -1586,6 +1719,49 @@
 
     updatePreview();
     scalePreview();
+
+    /* ----------------------------------------------------------  DISCLAIMER START
+       DISCLAIMER
+       Beim ersten Besuch einblenden; nach Bestätigung per localStorage
+       dauerhaft ausblenden.
+    ---------------------------------------------------------- */
+    (function initDisclaimer() {
+        const STORAGE_KEY   = 'disclaimerAccepted';
+        const overlay       = document.getElementById('disclaimer-overlay');
+        const btnClose      = document.getElementById('btn-disclaimer-close');
+        const btnConfirm    = document.getElementById('btn-disclaimer-confirm');
+
+        function closeDisclaimer() {
+            overlay.style.display      = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function acceptDisclaimer() {
+            localStorage.setItem(STORAGE_KEY, '1');
+            closeDisclaimer();
+        }
+
+        if (!localStorage.getItem(STORAGE_KEY)) {
+            overlay.style.display        = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            btnClose.addEventListener('click',   acceptDisclaimer);
+            btnConfirm.addEventListener('click', acceptDisclaimer);
+
+            // Klick auf den Overlay-Hintergrund schließt das Modal
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) acceptDisclaimer();
+            });
+        }
+
+        // ESC-Taste schließt das Disclaimer-Popup
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.style.display === 'flex') {
+                acceptDisclaimer();
+            }
+        });
+    }());
+    /* DISCLAIMER END ---------------------------------------------------------- */
 
     </script>
 </body>
