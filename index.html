@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <base href="./">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teams Hintergrund Generator</title>
+
+    <!-- Google Font: Inter (modern, clean) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           CORPORATE DESIGN TOKENS
+        ============================================================ */
+        :root {
+            --deep-blue:       #000f40;
+            --deep-blue-light: #6075b6;
+            --smart-yellow:    #dbff00;
+            --white:           #ffffff;
+
+            /* UI helpers */
+            --bg-page:    #f0f2f8;
+            --bg-input:   #fafbff;
+            --border:     #e0e4f0;
+            --shadow-sm:  0 2px 8px  rgba(0,15,64,0.07);
+            --shadow-md:  0 4px 20px rgba(0,15,64,0.13);
+            --radius-sm:  8px;
+            --radius-md:  12px;
+            --radius-lg:  16px;
+        }
+
+        /* ============================================================
+           RESET & BASE
+        ============================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-page);
+            color: var(--deep-blue);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ============================================================
+           HEADER
+        ============================================================ */
+        header {
+            background: var(--deep-blue);
+            color: var(--white);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        header .header-logo {
+            height: 32px;
+            width: auto;
+        }
+
+        header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Resolution badge */
+        header .badge {
+            margin-left: auto;
+            background: var(--smart-yellow);
+            color: var(--deep-blue);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        /* ============================================================
+           MAIN LAYOUT  (Controls | Preview)
+        ============================================================ */
+        main {
+            display: flex;
+            flex: 1;
+            gap: 24px;
+            padding: 24px;
+            align-items: flex-start;
+            overflow: hidden;
+        }
+
+        /* ============================================================
+           CONTROLS SIDEBAR
+        ============================================================ */
+        .controls {
+            width: 300px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Card container */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 18px 20px;
+        }
+
+        /* Card heading */
+        .card-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--deep-blue-light);
+            margin-bottom: 14px;
+        }
+
+        /* Form group */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+        .form-group:last-child { margin-bottom: 0; }
+
+        label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--deep-blue);
+        }
+
+        /* Text inputs & select */
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 9px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.88rem;
+            color: var(--deep-blue);
+            background: var(--bg-input);
+            outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s;
+            appearance: auto;
+        }
+        input[type="text"]:focus,
+        select:focus {
+            border-color: var(--deep-blue-light);
+            box-shadow: 0 0 0 3px rgba(96,117,182,0.18);
+        }
+        input::placeholder { color: #b0b8d4; }
+
+        /* ============================================================
+           BUTTONS
+        ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.14s, box-shadow 0.14s, opacity 0.2s;
+            position: relative;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .btn:disabled,
+        .btn.loading {
+            opacity: 0.65;
+            pointer-events: none;
+        }
+
+        /* Primary: Deep Blue */
+        .btn-primary {
+            background: var(--deep-blue);
+            color: var(--white);
+        }
+
+        /* Secondary: light tinted */
+        .btn-secondary {
+            background: #eef0f8;
+            color: var(--deep-blue);
+        }
+
+        /* Button icon */
+        .btn .btn-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        /* Fallback icon placeholder (shown if PNG fails) */
+        .btn .btn-icon-fallback {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* ============================================================
+           PREVIEW AREA
+        ============================================================ */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0; /* prevent overflow */
+        }
+
+        /* Section label above preview */
+        .preview-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--deep-blue-light);
+        }
+        .preview-label img {
+            width: 14px;
+            height: 14px;
+            object-fit: contain;
+            opacity: 0.55;
+        }
+
+        /* Wrapper that clips to the scaled dimensions of the preview */
+        #preview-wrapper {
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            background: #111;
+            position: relative;
+            /* width + height set dynamically by JS */
+        }
+
+        /* Hint text below preview */
+        .preview-hint {
+            font-size: 0.72rem;
+            color: var(--deep-blue-light);
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        /* ============================================================
+           THE ACTUAL PREVIEW CANVAS  (always 1920 × 1080 px)
+           CSS transform: scale() shrinks it visually — html2canvas
+           captures it at full resolution.
+        ============================================================ */
+        #preview {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            overflow: hidden;
+            transform-origin: top left;
+            /* transform: scale(x) applied by JS */
+
+            /* Use same font family as UI so exported text matches */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        /* --- Background image layer --- */
+        #preview-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+
+        /* --- Name background PNG overlay --- */
+        #preview-name-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('./assets/bg_name.png');
+            background-size: 100% 100%;
+            background-position: center;
+            opacity: 0.75;
+            z-index: 1;
+        }
+
+        /* --- Name + Job Title block --- */
+        #preview-text {
+			position: absolute;
+			left: 43px;
+			top: 30%;
+			transform: translateY(-50%);
+			width: 500px;
+			z-index: 2;
+}
+
+       /* First + Last Name
+          font-size wird per JS (fitNameText) überschrieben —
+          der CSS-Wert ist der Ausgangswert für den Reset. */
+		#preview-firstname,
+		#preview-lastname {
+			font-size: 84px;
+			font-weight: 900;
+			color: var(--deep-blue);
+			line-height: 1.02;
+			letter-spacing: -0.02em;
+			word-break: normal;
+			white-space: normal;
+			overflow: visible;
+		}
+
+		/* Abstand zwischen Name und Titel */
+		#preview-lastname {
+			margin-bottom: 16px;
+		}
+
+		/* Job title */
+		#preview-jobtitle {
+			font-size: 30px;
+			font-weight: 600;
+			margin-top: 10px;
+			color: var(--deep-blue);
+			letter-spacing: -0.01em;
+			opacity: 0.85;
+			word-break: normal;
+		}
+
+		/* Team / Brand */
+		#preview-team {
+			font-size: 30px;
+			font-weight: 600;
+			margin-top: 6px;
+			color: var(--deep-blue);
+			letter-spacing: -0.01em;
+			opacity: 0.85;
+			word-break: normal;
+			display: none;
+		}
+		#preview-team .blue {
+			color: #9fb4ff;
+		}
+
+        /* --- Company Logo (top right) --- */
+        #preview-logo {
+            position: absolute;
+            top: 56px;
+            right: 60px;
+            height: auto;
+            width: 600px;
+            max-width: 360px;
+            object-fit: contain;
+            z-index: 2;
+        }
+
+        /* ============================================================
+           BG IMAGE PICKER
+        ============================================================ */
+        .bg-picker {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .bg-tile {
+            aspect-ratio: 16 / 9;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            cursor: pointer;
+            border: 2.5px solid transparent;
+            background-color: var(--border);
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.14s, border-color 0.14s, box-shadow 0.14s, opacity 0.2s;
+            padding: 0;
+            /* Tooltip-Text unterdrücken */
+            font-size: 0;
+        }
+        .bg-tile:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-sm);
+            z-index: 1;
+        }
+        .bg-tile.active {
+            border-color: var(--smart-yellow);
+            box-shadow: 
+                0 0 0 2px var(--smart-yellow),
+                0 0 12px rgba(219, 255, 0, 0.6),
+               0 0 22px rgba(219, 255, 0, 0.4);
+
+          transform: scale(1.04);
+        }
+
+        /* Wenn Upload aktiv → Kacheln ausgrauen + sperren */
+        .bg-picker.upload-active .bg-tile {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        /* ============================================================
+           FOOTER
+        ============================================================ */
+        footer.footer {
+            background: var(--deep-blue);
+            color: rgba(255,255,255,0.5);
+            padding: 10px 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.72rem;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .footer-copy {
+            /* separates Copyright-Label */
+        }
+
+        /* Klickbare Versionsnummer */
+        .footer-version {
+            margin-left: auto;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.65);
+            padding: 3px 12px;
+            font-family: inherit;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.16s, color 0.16s, border-color 0.16s;
+        }
+        .footer-version:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+            border-color: rgba(255,255,255,0.45);
+        }
+
+        /* ============================================================
+           CHANGELOG OVERLAY
+        ============================================================ */
+
+        /* Halbtransparenter Backdrop */
+        #changelog-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            /* Einblendeanimation */
+            animation: overlayFadeIn 0.18s ease;
+        }
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* Weißer Modal-Container */
+        .changelog-modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 40px rgba(0,15,64,0.28);
+            width: 100%;
+            max-width: 640px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: modalSlideIn 0.2s ease;
+        }
+        @keyframes modalSlideIn {
+            from { transform: translateY(12px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        /* Header-Zeile: Titel + Schließen-Button */
+        .changelog-modal-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px 14px;
+            border-bottom: 1.5px solid var(--border);
+            flex-shrink: 0;
+        }
+        .changelog-modal-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--deep-blue);
+            letter-spacing: -0.01em;
+        }
+        .changelog-modal-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--deep-blue-light);
+            transition: background 0.14s, color 0.14s;
+            line-height: 1;
+        }
+        .changelog-modal-close:hover {
+            background: #eef0f8;
+            color: var(--deep-blue);
+        }
+
+        /* Scrollbarer Textbereich */
+        .changelog-content {
+            padding: 18px 20px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            line-height: 1.65;
+            color: var(--deep-blue);
+            white-space: pre-wrap;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .changelog-content h3 {
+            margin-top: 16px;
+            font-size: 0.9rem;
+        }
+
+        .changelog-content ul {
+            padding-left: 18px;
+            margin-top: 6px;
+        }
+
+        .changelog-content li {
+            margin-bottom: 4px;
+        }
+
+        /* ============================================================
+           DARK MODE
+        ============================================================ */
+
+        /* Toggle-Button im Header */
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            opacity: 0.65;
+            transition: opacity 0.16s, background 0.16s, transform 0.16s;
+            flex-shrink: 0;
+            margin-left: 4px;
+            padding: 0;
+        }
+        .theme-toggle:hover {
+            opacity: 1;
+            background: rgba(255,255,255,0.12);
+            transform: scale(1.1);
+        }
+        .theme-toggle img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            /* Icon weiß machen — passt auf den dunklen Header */
+            filter: brightness(0) invert(1);
+        }
+        .theme-toggle .theme-icon-fallback {
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        /* --- Dark Mode: Token-Overrides ---
+           Nur UI-Variablen werden überschrieben.
+           --deep-blue bleibt unangetastet → Preview unverändert. */
+        body.dark {
+            --bg-page:    #0a0f2a;
+            --bg-input:   #0d1433;
+            --border:     #1e2d5a;
+            --shadow-sm:  0 2px 8px  rgba(0,0,0,0.35);
+            --shadow-md:  0 4px 20px rgba(0,0,0,0.5);
+            color-scheme: dark;
+        }
+
+        /* Body-Textfarbe */
+        body.dark { color: #e8eaf6; }
+
+        /* Karten */
+        body.dark .card { background: #121a3a; }
+
+        /* Labels */
+        body.dark label { color: #c5cde8; }
+
+        /* Abschnitts-Überschriften in Karten */
+        body.dark .card-title { color: #7b8fcf; }
+
+        /* Eingabefelder */
+        body.dark input[type="text"],
+        body.dark select {
+            color: #e8eaf6;
+            background: var(--bg-input);
+            border-color: var(--border);
+        }
+        body.dark input::placeholder { color: #3b4d78; }
+        body.dark select option       { background: #121a3a; }
+
+        /* Sekundär-Buttons */
+        body.dark .btn-secondary             { background: #1a2650; color: #c5cde8; }
+        body.dark .btn-secondary:hover       { background: #1e2d5a; }
+
+        /* Preview-Bereich-Label + Hinweis */
+        body.dark .preview-label,
+        body.dark .preview-hint { color: #6070a8; }
+
+        /* Footer: Version-Badge */
+        body.dark .footer-version {
+            color: rgba(197,205,232,0.7);
+            border-color: rgba(197,205,232,0.2);
+        }
+        body.dark .footer-version:hover {
+            background: rgba(197,205,232,0.09);
+            color: #e8eaf6;
+            border-color: rgba(197,205,232,0.4);
+        }
+
+        /* Changelog Modal */
+        body.dark .changelog-modal             { background: #121a3a; }
+        body.dark .changelog-modal-header      { border-bottom-color: var(--border); }
+        body.dark .changelog-modal-title       { color: #e8eaf6; }
+        body.dark .changelog-content           { color: #b0bad8; }
+        body.dark .changelog-modal-close       { color: #7b8fcf; }
+        body.dark .changelog-modal-close:hover { background: #1e2d5a; color: #e8eaf6; }
+
+        /* Preview-Canvas: explizit vom Dark Mode ausnehmen.
+           --deep-blue ist ohnehin unverändert; diese Regel sichert
+           zusätzlich die color-scheme für native Scrollbars/Controls ab. */
+        #preview,
+        #preview * { color-scheme: light; }
+
+    </style>
+</head>
+<body>
+    <!-- Theme sofort anwenden — verhindert hellen Aufblitz beim Laden -->
+    <script>if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark');</script>
+
+    <!-- ====================================================
+         HEADER
+    ==================================================== -->
+    <header>
+        <!-- Logo in der Kopfzeile (visuell, kein Einfluss auf Export) -->
+        <img
+            class="header-logo"
+            src="./assets/logo.png"
+            alt="Firmenlogo"
+            onerror="this.style.display='none'"
+        >
+        <h1>Teams Hintergrund Generator</h1>
+        <span class="badge">1920 &times; 1080 px</span>
+
+        <!-- Dark Mode Toggle -->
+        <button
+            class="theme-toggle"
+            id="btn-theme"
+            title="Dark Mode wechseln"
+            aria-label="Dark Mode wechseln"
+            aria-pressed="false"
+        >
+            <img
+                src="assets/icons/theme.png"
+                alt=""
+                id="icon-theme"
+                onerror="this.style.display='none'; document.getElementById('icon-theme-fallback').style.display='flex';"
+            >
+            <span class="theme-icon-fallback" id="icon-theme-fallback" style="display:none;">🌙</span>
+        </button>
+    </header>
+
+    <!-- ====================================================
+         MAIN CONTENT
+    ==================================================== -->
+    <main>
+
+        <!-- ==================== CONTROLS ==================== -->
+        <aside class="controls" aria-label="Einstellungen">
+
+            <!-- Eingabefelder: Name & Titel -->
+            <div class="card">
+                <div class="card-title">Persönliche Daten</div>
+
+                <div class="form-group">
+                    <label for="input-firstname">Vorname</label>
+                    <input
+                        type="text"
+                        id="input-firstname"
+                        placeholder="Max"
+                        value="Max"
+                        autocomplete="given-name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="input-lastname">Nachname</label>
+                    <input
+                        type="text"
+                        id="input-lastname"
+                        placeholder="Mustermann"
+                        value="Mustermann"
+                        autocomplete="family-name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="input-jobtitle">Stellenbezeichnung</label>
+                    <input
+                        type="text"
+                        id="input-jobtitle"
+                        placeholder="z. B. Senior Consultant"
+                        value="Senior Consultant"
+                        autocomplete="organization-title"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="select-team">Team / Brand</label>
+                    <select id="select-team">
+                        <option value="">— keines —</option>
+                        <option value="enthus">enthus</option>
+                        <option value="enthus.blue">enthus.blue</option>
+                        <option value="custom">Eigenen Text …</option>
+                    </select>
+                </div>
+                <div class="form-group" id="group-team-custom" style="display:none;">
+                    <label for="input-team-custom">Eigener Text</label>
+                    <input
+                        type="text"
+                        id="input-team-custom"
+                        placeholder="z. B. Cloud &amp; Infrastructure"
+                    >
+                </div>
+            </div>
+
+            <!-- Hintergrundauswahl -->
+            <div class="card">
+                <div class="card-title">Hintergrund</div>
+
+                <div class="form-group">
+                    <label>Hintergrundbild</label>
+                    <!-- Kacheln werden per JS befüllt (BG_OPTIONS) -->
+                    <div id="bg-picker" class="bg-picker" role="radiogroup" aria-label="Hintergrundbild auswählen"></div>
+                </div>
+
+                <!-- Verstecktes File-Input (wird per Button-Klick ausgelöst) -->
+                <input
+                    type="file"
+                    id="input-bg-upload"
+                    accept="image/jpeg,image/png,image/jpg"
+                    style="display:none;"
+                    aria-label="Hintergrundbild hochladen"
+                >
+
+                <div class="btn-group">
+                    <!-- Upload-Button -->
+                    <button class="btn btn-secondary" id="btn-upload" type="button" title="Eigenes Hintergrundbild hochladen">
+                        <img
+                            class="btn-icon"
+                            src="assets/icons/upload.png"
+                            alt=""
+                            id="icon-upload"
+                            onerror="this.style.display='none'; document.getElementById('icon-upload-fallback').style.display='flex';"
+                        >
+                        <span class="btn-icon-fallback" id="icon-upload-fallback" style="display:none;">&#8593;</span>
+                        Eigenes Bild hochladen
+                    </button>
+
+                    <!-- Reset-Upload-Button (nur sichtbar wenn eigenes Bild aktiv) -->
+                    <button class="btn btn-secondary" id="btn-reset-upload" type="button" title="Eigenes Bild entfernen" style="display:none;">
+                        <img
+                            class="btn-icon"
+                            src="assets/icons/refresh2.png"
+                            alt=""
+                            id="icon-refresh2"
+                            onerror="this.style.display='none'; document.getElementById('icon-refresh2-fallback').style.display='flex';"
+                        >
+                        <span class="btn-icon-fallback" id="icon-refresh2-fallback" style="display:none;">&#8635;</span>
+                        Eigenes Bild entfernen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Aktions-Buttons -->
+            <div class="card">
+                <div class="card-title">Aktionen</div>
+
+                <div class="btn-group">
+                    <!-- Download-Button mit Icon -->
+                    <button class="btn btn-primary" id="btn-download" title="Bild als PNG exportieren">
+                        <img
+                            class="btn-icon"
+                            src="assets/icons/download.png"
+                            alt=""
+                            id="icon-download"
+                            onerror="this.style.display='none'; document.getElementById('icon-download-fallback').style.display='flex';"
+                        >
+                        <span class="btn-icon-fallback" id="icon-download-fallback" style="display:none;">&#8595;</span>
+                        <span id="btn-download-label">Als Bild herunterladen</span>
+                    </button>
+
+                    <!-- Reset-Button mit Icon -->
+                    <button class="btn btn-secondary" id="btn-reset" title="Eingaben zurücksetzen">
+                        <img
+                            class="btn-icon"
+                            src="assets/icons/refresh.png"
+                            alt=""
+                            id="icon-refresh"
+                            onerror="this.style.display='none'; document.getElementById('icon-refresh-fallback').style.display='flex';"
+                        >
+                        <span class="btn-icon-fallback" id="icon-refresh-fallback" style="display:none;">&#8635;</span>
+                        Zurücksetzen
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ==================== PREVIEW ==================== -->
+        <section class="preview-area" aria-label="Vorschau">
+
+            <!-- Label mit Icon -->
+            <div class="preview-label">
+                <img
+                    src="assets/icons/image.png"
+                    alt=""
+                    onerror="this.style.display='none'"
+                >
+                Live-Vorschau
+            </div>
+
+            <!--
+                #preview-wrapper: hat die skalierten Dimensionen (per JS gesetzt)
+                und clippt den überstehenden Inhalt von #preview.
+            -->
+            <div id="preview-wrapper">
+
+                <!--
+                    #preview: immer exakt 1920 × 1080 px.
+                    Wird per CSS transform: scale() verkleinert dargestellt.
+                    html2canvas erfasst es in voller Auflösung für den Export.
+                -->
+                <div id="preview" role="img" aria-label="Teams-Hintergrund Vorschau">
+
+                    <!-- Hintergrundbild-Ebene -->
+                    <div id="preview-bg"></div>
+
+                    <!-- Name background PNG -->
+                    <div id="preview-name-bg"></div>
+
+                    <!-- Textblock: Vorname / Nachname / Titel -->
+                    <div id="preview-text">
+                        <div id="preview-firstname">Max</div>
+                        <div id="preview-lastname">Mustermann</div>
+                        <div id="preview-jobtitle">Senior Consultant</div>
+                        <div id="preview-team"></div>
+                    </div>
+
+                    <!-- Firmenlogo oben rechts -->
+                    <img
+                        id="preview-logo"
+                        src="assets/logo.png"
+                        alt="Firmenlogo"
+                        onerror="this.style.visibility='hidden'"
+                    >
+
+                </div><!-- /#preview -->
+
+            </div><!-- /#preview-wrapper -->
+
+            <p class="preview-hint">
+                Die Vorschau entspricht exakt dem exportierten Bild &mdash; WYSIWYG
+            </p>
+
+        </section>
+
+    </main>
+
+    <!-- ====================================================
+         FOOTER
+    ==================================================== -->
+    <footer class="footer">
+        <span class="footer-copy">&copy; enthus GmbH</span>
+        <button class="footer-version" id="btn-version" title="Changelog anzeigen">
+            Version <span id="footer-version-number"></span>
+        </button>
+    </footer>
+
+    <!-- ====================================================
+         CHANGELOG OVERLAY
+    ==================================================== -->
+    <div id="changelog-overlay" role="dialog" aria-modal="true" aria-label="Changelog" style="display:none;">
+        <div class="changelog-modal">
+            <div class="changelog-modal-header">
+                <span class="changelog-modal-title">Changelog</span>
+                <button class="changelog-modal-close" id="btn-changelog-close" aria-label="Schließen">&times;</button>
+            </div>
+            <div class="changelog-content" id="changelog-content">
+            <h3>v0.9.3</h3>
+            <ul>
+            <li>Export-Logik verbessert (html2canvas stabiler integriert)</li>
+            <li>Dateinamen-Generierung optimiert (Slugify-System)</li>
+            <li>Sonderzeichen und Leerzeichen werden korrekt bereinigt</li>
+            <li>Verbessertes Fehlerhandling beim Download</li>
+            <li>Optimierungen für Nutzung in SharePoint / Browser</li>
+            </ul>
+            <h3>v0.9.2</h3>
+            <ul>
+            <li>Transparenz des Namens-Overlays (bg_name.png) optimiert</li>
+            <li>Bessere Balance zwischen Lesbarkeit und Hintergrundsichtbarkeit</li>
+            <li>Visuelles Feintuning des Layouts</li>
+            </ul>
+            <h3>v0.9.1</h3>
+            <ul>
+            <li>Auto-Scaling für Namen implementiert (dynamische Schriftgröße)</li>
+            <li>Verhindert Überlauf bei langen Namen (Breite & Höhe berücksichtigt)</li>
+            <li>Stabilitäts-Optimierungen für Layout und Export</li>
+            <li>Feinschliff der Textdarstellung im Namensbereich</li>
+            </ul>
+            <h3>v0.9</h3>
+            <ul>
+            <li>Dark Mode eingeführt (UI unabhängig vom Preview)</li>
+            <li>Theme-Toggle im Header integriert</li>
+            <li>Speicherung des Themes im localStorage</li>
+            <li>Fallback-Icons (🌙 / ☀️) für Theme-Wechsel ergänzt</li>
+            <li>Tooltip passt sich dynamisch an (Light / Dark Mode)</li>
+            <li>UI-Farben für Dark Mode optimiert (Karten, Inputs, Buttons)</li>
+            </ul>
+            <h3>v0.8</h3>
+            <ul>
+            <li>Visueller Hintergrund-Selector (Image Picker) eingeführt</li>
+            <li>Mini-Vorschau für alle Hintergrundbilder</li>
+            <li>Aktives Bild wird hervorgehoben (Rahmen + Status)</li>
+            <li>Upload integriert sich sauber in den Picker (Deaktivierung der Auswahl)</li>
+            <li>UX deutlich verbessert (kein Dropdown mehr nötig)</li>
+            </ul>
+            <h3>v0.7</h3>
+            <ul>
+            <li>Changelog-System eingeführt (Overlay + Version im Footer)</li>
+            <li>Anzeige der aktuellen Version im UI</li>
+            <li>Modal mit Close-Button (X) und Overlay</li>
+            <li>Escape-Key und Klick außerhalb schließen das Fenster</li>
+            </ul>
+
+            <h3>v0.6</h3>
+            <ul>
+            <li>Upload-Funktion für eigene Hintergrundbilder</li>
+            <li>Drag & Drop unterstützt</li>
+            <li>Reset für Upload</li>
+            <li>Dropdown erweitert</li>
+            </ul>
+
+            <h3>v0.5</h3>
+            <ul>
+            <li>Team-/Brand-Funktion ergänzt</li>
+            <li>enthus.blue mit Farbhighlight</li>
+            <li>Live-Vorschau optimiert</li>
+            </ul>
+
+            <h3>v0.4</h3>
+            <ul>
+            <li>Overlay auf PNG umgestellt (bg_name.png)</li>
+            <li>Textpositionierung verbessert</li>
+            </ul>
+
+            <h3>v0.3</h3>
+            <ul>
+            <li>Live-Vorschau (WYSIWYG)</li>
+            <li>PNG Export (html2canvas)</li>
+            </ul>
+
+            <h3>v0.2</h3>
+            <ul>
+            <li>UI & Eingabefelder</li>
+            <li>Hintergrund-Dropdown</li>
+            </ul>
+
+            <h3>v0.1</h3>
+            <ul>
+            <li>Initiale Version</li>
+            </ul>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================
+         html2canvas (CDN) — für PNG-Export
+    ==================================================== -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <script>
+    /* ============================================================
+       TEAMS HINTERGRUND GENERATOR  —  JavaScript
+    ============================================================
+
+       Aufbau:
+         1. Element-Referenzen
+         2. Standardwerte (DEFAULTS)
+         3. scalePreview()  — passt Vorschau an verfügbare Breite an
+         4. updatePreview() — reagiert live auf Eingaben
+         5. downloadImage() — exportiert 1920×1080 als PNG
+         6. resetForm()     — setzt Felder auf Standardwerte
+         7. Event Listener
+         8. Initialisierung
+
+    ============================================================ */
+
+    /* ----------------------------------------------------------
+       0. APP-VERSION
+       Zentrale Versionskonstante — nur hier ändern.
+    ---------------------------------------------------------- */
+    const APP_VERSION = '0.9.3';
+
+    /* ----------------------------------------------------------
+       1. ELEMENT-REFERENZEN
+    ---------------------------------------------------------- */
+    const inputFirstname   = document.getElementById('input-firstname');
+    const inputLastname    = document.getElementById('input-lastname');
+    const inputJobtitle    = document.getElementById('input-jobtitle');
+    const selectTeam       = document.getElementById('select-team');
+    const inputTeamCustom  = document.getElementById('input-team-custom');
+    const groupTeamCustom  = document.getElementById('group-team-custom');
+    const bgPicker            = document.getElementById('bg-picker');
+    const inputBgUpload       = document.getElementById('input-bg-upload');
+    const btnUpload           = document.getElementById('btn-upload');
+    const btnResetUpload      = document.getElementById('btn-reset-upload');
+    const btnDownload         = document.getElementById('btn-download');
+    const btnTheme            = document.getElementById('btn-theme');
+    const btnVersion          = document.getElementById('btn-version');
+    const footerVersionNumber = document.getElementById('footer-version-number');
+    const changelogOverlay    = document.getElementById('changelog-overlay');
+    const changelogContent    = document.getElementById('changelog-content');
+    const btnChangelogClose   = document.getElementById('btn-changelog-close');
+    const btnDownloadLabel = document.getElementById('btn-download-label');
+    const btnReset         = document.getElementById('btn-reset');
+
+    const previewEl        = document.getElementById('preview');
+    const previewWrapper   = document.getElementById('preview-wrapper');
+    const previewBg        = document.getElementById('preview-bg');
+    const previewFirstname = document.getElementById('preview-firstname');
+    const previewLastname  = document.getElementById('preview-lastname');
+    const previewJobtitle  = document.getElementById('preview-jobtitle');
+    const previewTeam      = document.getElementById('preview-team');
+
+    /* ----------------------------------------------------------
+       2. STANDARDWERTE (für Reset)
+    ---------------------------------------------------------- */
+    const DEFAULTS = {
+        firstname : 'Max',
+        lastname  : 'Mustermann',
+        jobtitle  : 'Senior Consultant',
+        team      : '',
+        bg        : 'assets/bg/bg1.jpg',
+    };
+
+    /* ----------------------------------------------------------
+       0b. DARK MODE TOGGLE
+       applyTheme() setzt/entfernt body.dark und synct aria-pressed.
+       Das Inline-Script im <body> hat die Klasse bereits gesetzt,
+       wenn "dark" im localStorage stand — hier wird nur aria-pressed
+       nachgezogen und der Click-Listener registriert.
+    ---------------------------------------------------------- */
+    function applyTheme(isDark) {
+    document.body.classList.toggle('dark', isDark);
+    btnTheme.setAttribute('aria-pressed', String(isDark));
+
+    // Tooltip dynamisch anpassen
+    btnTheme.title = isDark 
+        ? 'Light Mode aktivieren' 
+        : 'Dark Mode aktivieren';
+
+    // Fallback-Icon wechseln (🌙 / ☀️)
+    const fallback = document.getElementById('icon-theme-fallback');
+    if (fallback) {
+        fallback.textContent = isDark ? '☀️' : '🌙';
+    }
+}
+
+    btnTheme.addEventListener('click', () => {
+        const isDark = !document.body.classList.contains('dark');
+        applyTheme(isDark);
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    /* ----------------------------------------------------------
+       2a. BG IMAGE PICKER
+       BG_OPTIONS definiert die 5 Preset-Hintergrundbilder.
+       selectedBg speichert den aktuell aktiven Preset-Pfad.
+       Der Upload-State (customBgDataUrl) überschreibt selectedBg
+       temporär — wird er zurückgesetzt, gilt selectedBg wieder.
+    ---------------------------------------------------------- */
+    const BG_OPTIONS = [
+        { src: 'assets/bg/bg1.jpg', label: 'Hintergrund 1' },
+        { src: 'assets/bg/bg2.jpg', label: 'Hintergrund 2' },
+        { src: 'assets/bg/bg3.jpg', label: 'Hintergrund 3' },
+        { src: 'assets/bg/bg4.jpg', label: 'Hintergrund 4' },
+        { src: 'assets/bg/bg5.jpg', label: 'Hintergrund 5' },
+    ];
+
+    let selectedBg = DEFAULTS.bg;
+
+    // Kacheln einmalig beim Seitenaufbau rendern
+    BG_OPTIONS.forEach(({ src, label }) => {
+        const tile = document.createElement('button');
+        tile.type             = 'button';
+        tile.className        = 'bg-tile';
+        tile.style.backgroundImage = `url('${src}')`;
+        tile.title            = label;
+        tile.dataset.src      = src;
+        tile.setAttribute('aria-label', label);
+        tile.setAttribute('role', 'radio');
+        tile.setAttribute('aria-checked', src === selectedBg ? 'true' : 'false');
+        if (src === selectedBg) tile.classList.add('active');
+
+        tile.addEventListener('click', () => {
+            // Upload-State aufräumen ohne eigenen updatePreview-Aufruf
+            if (customBgDataUrl) resetCustomBg(false);
+            setSelectedBg(src);
+        });
+
+        bgPicker.appendChild(tile);
+    });
+
+    // Setzt die aktive Kachel und aktualisiert die Vorschau
+    function setSelectedBg(src) {
+        selectedBg = src;
+        bgPicker.querySelectorAll('.bg-tile').forEach(tile => {
+            const isActive = tile.dataset.src === src;
+            tile.classList.toggle('active', isActive);
+            tile.setAttribute('aria-checked', isActive ? 'true' : 'false');
+        });
+        bgPicker.classList.remove('upload-active');
+        updatePreview();
+    }
+
+    /* ----------------------------------------------------------
+       2b. CUSTOM BACKGROUND STATE
+       Speichert das hochgeladene Bild als Base64-Data-URL.
+       Base64 (statt Blob-URL) ist nötig, damit html2canvas das
+       Bild beim Export zuverlässig einbetten kann.
+    ---------------------------------------------------------- */
+    let customBgDataUrl = null;
+
+    /* ----------------------------------------------------------
+       2c. UPLOAD HANDLER
+       Liest die gewählte Datei per FileReader als Data-URL ein,
+       aktiviert die "Eigenes Bild"-Option im Dropdown und
+       aktualisiert sofort die Vorschau.
+    ---------------------------------------------------------- */
+    function handleBgUpload(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            // Base64-Data-URL speichern
+            customBgDataUrl = e.target.result;
+
+            // Picker-Kacheln ausgrauen (Upload hat Vorrang)
+            bgPicker.classList.add('upload-active');
+
+            // Reset-Button einblenden
+            btnResetUpload.style.display = '';
+
+            // Vorschau aktualisieren
+            updatePreview();
+        };
+
+        reader.onerror = function () {
+            console.error('[Upload] FileReader Fehler');
+            alert('Das Bild konnte nicht geladen werden.');
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    /* ----------------------------------------------------------
+       2d. RESET CUSTOM BACKGROUND
+       Entfernt das hochgeladene Bild und stellt den Standard-
+       Hintergrund wieder her.
+    ---------------------------------------------------------- */
+    // triggerUpdate = false wenn der Aufrufer selbst updatePreview() aufruft
+    function resetCustomBg(triggerUpdate = true) {
+        customBgDataUrl = null;
+
+        // Picker-Kacheln wieder aktivieren, aktive Kachel wiederherstellen
+        bgPicker.classList.remove('upload-active');
+        bgPicker.querySelectorAll('.bg-tile').forEach(tile => {
+            const isActive = tile.dataset.src === selectedBg;
+            tile.classList.toggle('active', isActive);
+            tile.setAttribute('aria-checked', isActive ? 'true' : 'false');
+        });
+
+        // Reset-Button ausblenden, File-Input leeren
+        btnResetUpload.style.display = 'none';
+        inputBgUpload.value = '';
+
+        if (triggerUpdate) updatePreview();
+    }
+
+    /* ----------------------------------------------------------
+       2e. CHANGELOG  (fetch + open / close)
+       Das Changelog wird beim ersten Öffnen einmalig geladen
+       und danach im DOM gecacht — kein erneuter Fetch nötig.
+    ---------------------------------------------------------- */
+    function openChangelog() {
+    changelogOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    }
+
+    function closeChangelog() {
+        changelogOverlay.style.display = 'none';
+        document.body.style.overflow   = '';
+    }
+
+    /* ----------------------------------------------------------
+       3. SCALE PREVIEW
+       Der #preview-Div ist immer 1920×1080 px.
+       Via CSS transform: scale() wird er verkleinert dargestellt.
+       Der Wrapper bekommt die skalierten Dimensionen, damit der
+       Rest des Layouts nicht verschoben wird.
+    ---------------------------------------------------------- */
+    function scalePreview() {
+        // Verfügbare Breite des Preview-Bereichs ermitteln
+        const area = previewWrapper.parentElement;
+        const availableWidth = area.clientWidth - 4;   // kleinen Puffer abziehen
+
+        // Maximale Höhe: 72 % der Fensterhöhe, max 620 px
+        const maxHeight = Math.min(window.innerHeight * 0.72, 620);
+
+        // Skalierungsfaktor: der kleinste der beiden Faktoren gewinnt
+        const scaleX = availableWidth / 1920;
+        const scaleY = maxHeight / 1080;
+        const scale  = Math.min(scaleX, scaleY);
+
+        // CSS-Transform anwenden
+        previewEl.style.transform = `scale(${scale})`;
+
+        // Wrapper-Dimensionen = skalierte Preview-Dimensionen
+        previewWrapper.style.width  = Math.round(1920 * scale) + 'px';
+        previewWrapper.style.height = Math.round(1080 * scale) + 'px';
+    }
+
+    /* ----------------------------------------------------------
+       4. UPDATE PREVIEW (Live)
+       Wird bei jeder Eingabe aufgerufen und synchronisiert die
+       Vorschau mit den Formulardaten.
+    ---------------------------------------------------------- */
+    function updatePreview() {
+        const firstname = inputFirstname.value.trim();
+        const lastname  = inputLastname.value.trim();
+        const jobtitle  = inputJobtitle.value.trim();
+
+        // Texte aktualisieren (Fallback-Platzhalter wenn leer)
+        previewFirstname.textContent = firstname || 'Vorname';
+        previewLastname.textContent  = lastname  || 'Nachname';
+        previewJobtitle.textContent  = jobtitle  || 'Stellenbezeichnung';
+
+        // Hintergrundbild wechseln:
+        // Eigener Upload hat Vorrang vor Preset-Kachel.
+        if (customBgDataUrl) {
+            previewBg.style.backgroundImage = `url('${customBgDataUrl}')`;
+        } else {
+            previewBg.style.backgroundImage = `url('${selectedBg}')`;
+        }
+
+        // Team / Brand aktualisieren
+        const teamVal    = selectTeam.value;
+        const customText = inputTeamCustom.value.trim();
+
+        if (!teamVal) {
+            previewTeam.style.display = 'none';
+        } else if (teamVal === 'enthus') {
+            previewTeam.style.display = 'block';
+            previewTeam.textContent   = 'enthus';
+        } else if (teamVal === 'enthus.blue') {
+            previewTeam.style.display = 'block';
+            previewTeam.innerHTML     = 'enthus.<span class="blue">blue</span>';
+        } else if (teamVal === 'custom') {
+            if (customText) {
+                previewTeam.style.display = 'block';
+                previewTeam.textContent   = customText;
+            } else {
+                previewTeam.style.display = 'none';
+            }
+        }
+
+        // Schriftgröße des Namens anpassen (nach dem Setzen der Texte)
+        fitNameText();
+    }
+
+    /* ----------------------------------------------------------
+       4a. FIT NAME TEXT
+       Verkleinert #preview-firstname und #preview-lastname synchron
+       (immer gleiche Größe), bis der Text in den vorgesehenen Bereich
+       des Namens-Overlays (bg_name.png) passt.
+
+       Zwei Kriterien werden geprüft:
+         1. Breite: scrollWidth > clientWidth
+            → ein Wort ist breiter als der Container (500 px)
+         2. Höhe: kombinierte scrollHeight beider Elemente > MAX_NAME_H
+            → mehrzeilige Namen sprengen den vertikalen Bereich
+
+       Inline-Style überschreibt den CSS-Ausgangswert (84px).
+       html2canvas liest computed styles → Export unverändert korrekt.
+    ---------------------------------------------------------- */
+    function fitNameText() {
+        const MAX_SIZE   = 84;    // px — Ausgangswert, identisch zum CSS
+        const MIN_SIZE   = 36;    // px — untere Grenze
+        const STEP       = 2;     // px — Schrittweite je Iteration
+        const MAX_ITER   = 50;    // Sicherheitslimit gegen Endlosschleife
+        const MAX_NAME_H = 400;   // px — max. kombinierte Höhe Vorname + Nachname
+
+        // Auf Maximalwert zurücksetzen bevor gemessen wird
+        previewFirstname.style.fontSize = MAX_SIZE + 'px';
+        previewLastname.style.fontSize  = MAX_SIZE + 'px';
+
+        let size = MAX_SIZE;
+
+        for (let i = 0; i < MAX_ITER; i++) {
+            // clientWidth = 500px (Containerbreite, unabhängig vom CSS scale-Transform)
+            const containerW = previewFirstname.clientWidth;
+
+            const fits =
+                previewFirstname.scrollWidth  <= containerW &&
+                previewLastname.scrollWidth   <= containerW &&
+                (previewFirstname.scrollHeight + previewLastname.scrollHeight) <= MAX_NAME_H;
+
+            if (fits) break; // Text passt — fertig
+
+            size -= STEP;
+            if (size < MIN_SIZE) { size = MIN_SIZE; break; }
+
+            previewFirstname.style.fontSize = size + 'px';
+            previewLastname.style.fontSize  = size + 'px';
+        }
+    }
+
+    /* ----------------------------------------------------------
+       5. DOWNLOAD / EXPORT
+       html2canvas rendert #preview in seiner natürlichen Größe
+       (1920×1080) — unabhängig vom CSS-Transform der Vorschau.
+       Dazu wird der Transform kurz entfernt und das Element
+       unsichtbar außerhalb des Viewports positioniert.
+    ---------------------------------------------------------- */
+    async function downloadImage() {
+        // Dateiname aus Eingaben zusammensetzen
+        const slugify = str => str
+            .toLowerCase()
+            .replace(/\./g, '-')        // Punkte → Bindestrich (z. B. enthus.blue → enthus-blue)
+            .replace(/\s+/g, '-')       // Leerzeichen → Bindestrich
+            .replace(/[^a-z0-9\-]/g, ''); // alle anderen Sonderzeichen entfernen
+
+        const firstname = slugify(inputFirstname.value.trim() || 'vorname');
+        const lastname  = slugify(inputLastname.value.trim()  || 'nachname');
+        const jobtitle  = slugify(inputJobtitle.value.trim());
+
+        const teamVal    = selectTeam.value;
+        const customText = inputTeamCustom.value.trim();
+        let teamSlug = '';
+        if      (teamVal === 'enthus')      teamSlug = 'enthus';
+        else if (teamVal === 'enthus.blue') teamSlug = 'enthus-blue';
+        else if (teamVal === 'custom')      teamSlug = slugify(customText);
+
+        const parts = ['teams-bg', `${firstname}-${lastname}`];
+        if (jobtitle)  parts.push(jobtitle);
+        if (teamSlug)  parts.push(teamSlug);
+
+        const filename = parts.join('_') + '.png';
+
+        // Lade-Zustand am Button anzeigen
+        btnDownload.classList.add('loading');
+        btnDownloadLabel.textContent = 'Wird erstellt …';
+
+        // --- Temporäre DOM-Anpassungen für korrektes Rendering ---
+
+        // 1) Transform entfernen → Preview springt auf 1920×1080 zurück
+        const savedTransform = previewEl.style.transform;
+
+        // 2) Wrapper-Overflow aufheben damit der volle Inhalt sichtbar ist
+        const savedOverflow  = previewWrapper.style.overflow;
+
+        // 3) Preview unsichtbar außerhalb des Viewports platzieren
+        previewEl.style.transform   = 'none';
+        previewEl.style.position    = 'fixed';
+        previewEl.style.top         = '-9999px';
+        previewEl.style.left        = '-9999px';
+        previewWrapper.style.overflow = 'visible';
+
+        try {
+            // html2canvas rendert #preview bei nativer Auflösung
+            const canvas = await html2canvas(previewEl, {
+                width           : 1920,
+                height          : 1080,
+                scale           : 1,          // 1:1 → echte 1920×1080 px im Canvas
+                useCORS         : true,        // CORS-Images erlauben
+                allowTaint      : true,        // Tainted Canvas tolerieren
+                logging         : false,
+                backgroundColor : null,        // Transparenz erhalten
+                imageTimeout    : 8000,
+            });
+
+            // PNG-Download auslösen
+            const link      = document.createElement('a');
+            link.download   = filename;
+            link.href       = canvas.toDataURL('image/png');
+            link.click();
+
+        } catch (err) {
+            console.error('[Export] html2canvas Fehler:', err);
+            alert(
+                'Der Export ist fehlgeschlagen.\n\n' +
+                'Hinweis: Beim Öffnen der Datei direkt über das Dateisystem (file://)\n' +
+                'können CORS-Einschränkungen auftreten. Bitte die Datei über einen\n' +
+                'lokalen Webserver öffnen (z. B. Live Server in VS Code).'
+            );
+        } finally {
+            // --- DOM-Zustand wiederherstellen ---
+            previewEl.style.transform = savedTransform;
+            previewEl.style.position  = '';
+            previewEl.style.top       = '';
+            previewEl.style.left      = '';
+            previewWrapper.style.overflow = savedOverflow || 'hidden';
+
+            // Button zurücksetzen
+            btnDownload.classList.remove('loading');
+            btnDownloadLabel.textContent = 'Als Bild herunterladen';
+        }
+    }
+
+    /* ----------------------------------------------------------
+       6. RESET
+       Setzt alle Eingabefelder auf die Standardwerte zurück
+       und aktualisiert die Vorschau.
+    ---------------------------------------------------------- */
+    function resetForm() {
+        inputFirstname.value    = DEFAULTS.firstname;
+        inputLastname.value     = DEFAULTS.lastname;
+        inputJobtitle.value     = DEFAULTS.jobtitle;
+        selectTeam.value        = DEFAULTS.team;
+        inputTeamCustom.value   = '';
+        groupTeamCustom.style.display = 'none';
+
+        // Eigenes Hintergrundbild + Picker zurücksetzen
+        customBgDataUrl = null;
+        btnResetUpload.style.display = 'none';
+        inputBgUpload.value = '';
+        selectedBg = DEFAULTS.bg;
+        bgPicker.classList.remove('upload-active');
+        bgPicker.querySelectorAll('.bg-tile').forEach(tile => {
+            const isActive = tile.dataset.src === selectedBg;
+            tile.classList.toggle('active', isActive);
+            tile.setAttribute('aria-checked', isActive ? 'true' : 'false');
+        });
+
+        updatePreview();
+    }
+
+    /* ----------------------------------------------------------
+       7. EVENT LISTENER
+    ---------------------------------------------------------- */
+
+    // Upload-Button: öffnet den File-Dialog
+    btnUpload.addEventListener('click', () => inputBgUpload.click());
+
+    // File-Input: wird nach Dateiauswahl gefeuert
+    inputBgUpload.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            handleBgUpload(this.files[0]);
+        }
+    });
+
+    // Drag & Drop auf den Preview-Wrapper als Bonus
+    previewWrapper.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        previewWrapper.style.outline = '3px dashed var(--deep-blue-light)';
+    });
+    previewWrapper.addEventListener('dragleave', () => {
+        previewWrapper.style.outline = '';
+    });
+    previewWrapper.addEventListener('drop', (e) => {
+        e.preventDefault();
+        previewWrapper.style.outline = '';
+        const file = e.dataTransfer.files[0];
+        if (file) handleBgUpload(file);
+    });
+
+    // Reset-Upload-Button
+    btnResetUpload.addEventListener('click', resetCustomBg);
+
+    // Team-Dropdown: Custom-Feld ein-/ausblenden + Vorschau
+    selectTeam.addEventListener('change', function () {
+        groupTeamCustom.style.display = selectTeam.value === 'custom' ? '' : 'none';
+        updatePreview();
+    });
+
+    // Live-Vorschau: jede Tastatureingabe & Dropdown-Änderung
+    inputFirstname.addEventListener('input',    updatePreview);
+    inputLastname.addEventListener('input',     updatePreview);
+    inputJobtitle.addEventListener('input',     updatePreview);
+    inputTeamCustom.addEventListener('input',   updatePreview);
+
+    // Aktions-Buttons
+    btnDownload.addEventListener('click', downloadImage);
+    btnReset.addEventListener('click',    resetForm);
+
+    // Changelog öffnen / schließen
+    btnVersion.addEventListener('click',        openChangelog);
+    btnChangelogClose.addEventListener('click', closeChangelog);
+
+    // Klick auf den dunklen Backdrop (außerhalb des Modals) schließt es
+    changelogOverlay.addEventListener('click', function (e) {
+        if (e.target === changelogOverlay) closeChangelog();
+    });
+
+    // Escape-Taste schließt das Overlay
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && changelogOverlay.style.display !== 'none') {
+            closeChangelog();
+        }
+    });
+
+    // Vorschau bei Fenstergrößenänderung neu skalieren
+    window.addEventListener('resize', scalePreview);
+
+    /* ----------------------------------------------------------
+       8. INITIALISIERUNG
+       Vorschau beim Laden der Seite einmalig befüllen & skalieren.
+    ---------------------------------------------------------- */
+    // Versionsnummer im Footer einsetzen
+    footerVersionNumber.textContent = APP_VERSION;
+
+    // Theme-State mit aria-pressed synchronisieren (Klasse ggf. schon via Inline-Script gesetzt)
+    applyTheme(document.body.classList.contains('dark'));
+
+    updatePreview();
+    scalePreview();
+
+    </script>
+</body>
+</html>
