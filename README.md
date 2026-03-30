@@ -7,6 +7,11 @@ Ein interner Generator für professionelle Microsoft Teams Hintergründe im Corp
 
 Erstelle in wenigen Sekunden personalisierte Hintergrundbilder mit Name, Rolle und Branding – optimiert für Meetings, Präsentationen und Remote Work.
 
+> ⚠️ **Hinweis**  
+> Dieses Tool wurde eigenständig zu Lern- und Demonstrationszwecken entwickelt und ist aktuell kein offiziell freigegebenes Produkt.  
+> Eine mögliche Abstimmung und Bereitstellung über die Corporate IT erfolgt zu einem späteren Zeitpunkt.
+
+
 ---
 
 ## 🚀 Features
