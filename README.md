@@ -1,6 +1,6 @@
 # 🎨 Teams Background Generator
 
-![Version](https://img.shields.io/badge/version-0.9.3-blue)
+![Version](https://img.shields.io/badge/version-0.9.5-blue)
 ![Status](https://img.shields.io/badge/status-active-success)
 
 Ein interner Generator für professionelle Microsoft Teams Hintergründe im Corporate Design von enthus.
@@ -24,12 +24,24 @@ Erstelle in wenigen Sekunden personalisierte Hintergrundbilder mit Name, Rolle u
 - Team-/Brand-Anzeige (z. B. *enthus.blue*)
 - Dark Mode
 - Integriertes Changelog
+- Presets / Profile speichern, laden und löschen
+- Export & Import von Profilen (JSON)
 
 ---
 
 ## 🗺️ Roadmap
 
 ### ✅ Bereits umgesetzt
+
+### v0.9.5 (aktueller Stand)
+- Preset-System (Speichern, Laden, Löschen)
+- Export & Import von Profilen (JSON)
+- Eigene Hintergrundbilder werden korrekt in Presets gespeichert
+- Upload-Bild wird als auswählbare Kachel angezeigt
+- Einheitliches Dateinamen-System (Download & Presets)
+- Verbesserte Upload-Hinweise (bezogen auf Profil-Speicherung)
+- Fehlerbehandlung für Speicherlimits (localStorage)
+- Allgemeine UX-Verbesserungen
 
 #### v0.9.3
 - Export-Logik verbessert (html2canvas stabilisiert)
@@ -48,10 +60,8 @@ Erstelle in wenigen Sekunden personalisierte Hintergrundbilder mit Name, Rolle u
 
 ### 🔜 In Planung
 
-- 💾 Presets / Profile speichern  
-- 🖼️ Upload-Bild als Kachel anzeigen  
-- ✨ UX Verbesserungen  
-- 🎨 Hintergründe überarbeiten  
+- ✨ UX Verbesserungen und Weitere UX Verbesserungen (Animationen, Feedback)  
+- 🎨 Hintergründe final abstimmen  
 
 ---
 
@@ -68,6 +78,7 @@ Erstelle in wenigen Sekunden personalisierte Hintergrundbilder mit Name, Rolle u
 - HTML / CSS / Vanilla JavaScript
 - html2canvas für PNG-Export
 - Keine Backend-Abhängigkeiten
+- localStorage für Presets
 
 ---
 
