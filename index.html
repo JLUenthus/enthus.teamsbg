@@ -435,10 +435,28 @@
           transform: scale(1.04);
         }
 
-        /* Wenn Upload aktiv → Kacheln ausgrauen + sperren */
-        .bg-picker.upload-active .bg-tile {
-            opacity: 0.35;
+        /* --- Custom Upload Background --- */
+        .bg-tile-upload {
+            position: relative;
+            border-color: var(--deep-blue-light);
+        }
+
+        /* Badge-Label auf der Upload-Kachel */
+        .bg-tile-badge {
+            position: absolute;
+            bottom: 3px;
+            left: 3px;
+            background: rgba(0, 15, 64, 0.72);
+            color: #fff;
+            /* Expliziter Override: .bg-tile setzt font-size:0 für Tooltip-Unterdrückung */
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 4px;
+            line-height: 1.5;
             pointer-events: none;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
         }
 
         /* ============================================================
@@ -798,6 +816,155 @@
         #preview,
         #preview * { color-scheme: light; }
 
+        /* ============================================================
+           PRESET SYSTEM
+        ============================================================ */
+
+        /* Liste der gespeicherten Profile */
+        .preset-list {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* Einzelner Preset-Eintrag */
+        .preset-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 9px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border);
+            background: var(--bg-input);
+            cursor: pointer;
+            transition: border-color 0.14s, background 0.14s;
+        }
+        .preset-item:hover {
+            border-color: var(--deep-blue-light);
+            background: #eef0f8;
+        }
+
+        /* Mini-Vorschau des Hintergrunds */
+        .preset-thumb {
+            width: 38px;
+            height: 22px;
+            border-radius: 3px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--border);
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+
+        /* Text-Block: Name + Rolle */
+        .preset-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .preset-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--deep-blue);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .preset-meta {
+            font-size: 0.68rem;
+            color: var(--deep-blue-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 1px;
+        }
+
+        /* Löschen-Button (×) */
+        .preset-delete {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--deep-blue-light);
+            font-size: 1.1rem;
+            line-height: 1;
+            padding: 2px 5px;
+            border-radius: 4px;
+            transition: color 0.12s, background 0.12s;
+        }
+        .preset-delete:hover {
+            color: #c0001a;
+            background: rgba(192, 0, 26, 0.08);
+        }
+
+        /* Upload-Hinweis unter dem Upload-Button */
+        .upload-hint {
+            font-size: 0.68rem;
+            color: var(--deep-blue-light);
+            margin-top: 7px;
+            line-height: 1.45;
+        }
+        .upload-hint.warn {
+            color: #b85c00;
+        }
+        body.dark .upload-hint       { color: #6070a8; }
+        body.dark .upload-hint.warn  { color: #e08840; }
+
+        /* Export / Import – zweispaltiger Button-Row */
+        .preset-io-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .preset-io-btn {
+            flex: 1;
+            font-size: 0.78rem;
+            padding: 7px 8px;
+        }
+
+        /* Trennlinie zwischen Button und Liste */
+        .preset-divider {
+            border: none;
+            border-top: 1.5px solid var(--border);
+            margin: 10px 0 2px;
+        }
+
+        /* Toast-Benachrichtigung (Feedback-Overlay) */
+        #preset-toast {
+            position: fixed;
+            bottom: 64px;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--deep-blue);
+            color: var(--white);
+            padding: 9px 22px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 9999;
+            white-space: nowrap;
+            box-shadow: var(--shadow-md);
+        }
+        #preset-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- Dark Mode: Preset System --- */
+        body.dark .preset-item              { background: var(--bg-input); border-color: var(--border); }
+        body.dark .preset-item:hover        { background: #1a2650; border-color: var(--deep-blue-light); }
+        body.dark .preset-name              { color: #e8eaf6; }
+        body.dark .preset-meta              { color: #6070a8; }
+        body.dark .preset-thumb             { border-color: var(--border); }
+        body.dark .preset-delete            { color: #6070a8; }
+        body.dark .preset-delete:hover      { color: #ff6b6b; background: rgba(255,107,107,0.1); }
+        body.dark .preset-divider           { border-color: var(--border); }
+        body.dark #preset-toast             { background: var(--smart-yellow); color: var(--deep-blue); }
+
     </style>
 </head>
 <body>
@@ -946,6 +1113,35 @@
                         Eigenes Bild entfernen
                     </button>
                 </div>
+
+                <!-- Upload-Hinweis: Dateigröße -->
+                <p class="upload-hint" id="upload-hint">
+                    Empfohlen: Bilder unter 2 MB (für Profil-Speicherung)
+                </p>
+            </div>
+
+            <!-- ==================== PRESET SYSTEM ==================== -->
+            <div class="card">
+                <div class="card-title">Profile</div>
+
+                <button class="btn btn-secondary" id="btn-save-preset" type="button" title="Aktuelle Einstellungen als Profil speichern">
+                    💾&nbsp; Profil speichern
+                </button>
+
+                <!-- Export / Import -->
+                <div class="preset-io-row">
+                    <button class="btn btn-secondary preset-io-btn" id="btn-export-presets" type="button" title="Profile als JSON exportieren">
+                        📥 Export
+                    </button>
+                    <button class="btn btn-secondary preset-io-btn" id="btn-import-presets" type="button" title="Profile aus JSON importieren">
+                        📤 Import
+                    </button>
+                </div>
+                <!-- Verstecktes File-Input für JSON-Import -->
+                <input type="file" id="input-preset-import" accept="application/json,.json" style="display:none;" aria-label="Profile importieren">
+
+                <!-- Gespeicherte Profile werden hier per JS eingefügt -->
+                <div id="preset-list" class="preset-list" style="display:none;"></div>
             </div>
 
             <!-- Aktions-Buttons -->
@@ -1084,6 +1280,16 @@
                 <button class="changelog-modal-close" id="btn-changelog-close" aria-label="Schließen">&times;</button>
             </div>
             <div class="changelog-content" id="changelog-content">
+            <h3>v0.9.5</h3>
+            <ul>
+            <li>Preset-System erweitert (Speichern, Laden, Löschen)</li>
+            <li>Export & Import von Profilen (JSON-Datei)</li>
+            <li>Eigene Hintergrundbilder werden jetzt korrekt in Presets gespeichert</li>
+            <li>Upload-Hinweis verbessert (bezieht sich auf Profil-Speicherung)</li>
+            <li>Dateinamen-System vereinheitlicht (Download & Presets)</li>
+            <li>Upload-Hinweis wird beim Entfernen des Bildes korrekt zurückgesetzt</li>
+            <li>Allgemeine UX-Verbesserungen und Stabilitätsfixes</li>
+            </ul>
             <h3>v0.9.3</h3>
             <ul>
             <li>Export-Logik verbessert (html2canvas stabiler integriert)</li>
@@ -1199,7 +1405,7 @@
        0. APP-VERSION
        Zentrale Versionskonstante — nur hier ändern.
     ---------------------------------------------------------- */
-    const APP_VERSION = '0.9.3';
+    const APP_VERSION = '0.9.5';
 
     /* ----------------------------------------------------------
        1. ELEMENT-REFERENZEN
@@ -1303,8 +1509,13 @@
         if (src === selectedBg) tile.classList.add('active');
 
         tile.addEventListener('click', () => {
-            // Upload-State aufräumen ohne eigenen updatePreview-Aufruf
-            if (customBgDataUrl) resetCustomBg(false);
+            // --- Custom Upload Background ---
+            // Nur customBgDataUrl leeren (Kachel bleibt im Picker, nur deaktiviert).
+            // setSelectedBg() setzt die aria/active-Zustände aller Kacheln korrekt.
+            if (customBgDataUrl) {
+                customBgDataUrl = null;
+                bgPicker.classList.remove('upload-active');
+            }
             setSelectedBg(src);
         });
 
@@ -1329,6 +1540,8 @@
        Base64 (statt Blob-URL) ist nötig, damit html2canvas das
        Bild beim Export zuverlässig einbetten kann.
     ---------------------------------------------------------- */
+    // Einzige Quelle für das aktuelle eigene Hintergrundbild.
+    // null = kein eigenes Bild aktiv, sonst Base64-Data-URL.
     let customBgDataUrl = null;
 
     /* ----------------------------------------------------------
@@ -1340,20 +1553,30 @@
     function handleBgUpload(file) {
         if (!file || !file.type.startsWith('image/')) return;
 
+        // --- Upload-Hinweis: Größenprüfung ---
+        const hintEl  = document.getElementById('upload-hint');
+        const isLarge = file.size > 2 * 1024 * 1024;   // > 2 MB
+        if (hintEl) {
+            hintEl.classList.toggle('warn', isLarge);
+            hintEl.textContent = isLarge
+                ? `⚠ Datei (${(file.size / 1024 / 1024).toFixed(1)} MB) – könnte beim Speichern von Profilen Probleme verursachen`
+                : 'Empfohlen: Bilder unter 2 MB (für Profil-Speicherung)';
+        }
+        if (isLarge) showToast('⚠ Großes Bild – könnte beim Speichern von Profilen Probleme verursachen');
+
         const reader = new FileReader();
 
         reader.onload = function (e) {
             // Base64-Data-URL speichern
             customBgDataUrl = e.target.result;
 
-            // Picker-Kacheln ausgrauen (Upload hat Vorrang)
-            bgPicker.classList.add('upload-active');
+            // --- Custom Upload Background ---
+            // Kachel im Picker erstellen / ersetzen und sofort aktivieren.
+            // updatePreview() wird durch tile.click() in upsertUploadTile aufgerufen.
+            upsertUploadTile(customBgDataUrl);
 
             // Reset-Button einblenden
             btnResetUpload.style.display = '';
-
-            // Vorschau aktualisieren
-            updatePreview();
         };
 
         reader.onerror = function () {
@@ -1365,6 +1588,54 @@
     }
 
     /* ----------------------------------------------------------
+       2c-2. UPSERT UPLOAD TILE  (Custom Upload Background)
+       Erstellt eine neue Upload-Kachel im Picker oder ersetzt die
+       vorhandene. dataUrl wird im Closure der Kachel gehalten —
+       keine externe State-Variable nötig.
+    ---------------------------------------------------------- */
+    function upsertUploadTile(dataUrl) {
+        // Vorhandene Upload-Kachel ersetzen (nur ein Upload gleichzeitig)
+        const existing = bgPicker.querySelector('[data-src="__upload__"]');
+        if (existing) existing.remove();
+
+        // Kachel bauen – gleiche Klasse (.bg-tile) wie Preset-Kacheln
+        const tile = document.createElement('button');
+        tile.type      = 'button';
+        tile.className = 'bg-tile bg-tile-upload';
+        tile.style.backgroundImage = `url('${dataUrl}')`;
+        tile.title     = 'Eigenes Bild';
+        tile.dataset.src = '__upload__';
+        tile.setAttribute('aria-label',   'Eigenes Bild');
+        tile.setAttribute('role',         'radio');
+        tile.setAttribute('aria-checked', 'false');
+
+        const badge = document.createElement('span');
+        badge.className   = 'bg-tile-badge';
+        badge.textContent = '📷 Eigenes Bild';
+        tile.appendChild(badge);
+
+        tile.addEventListener('click', () => {
+            // dataUrl kommt aus dem Closure — einzige Quelle, kein externer State
+            customBgDataUrl = dataUrl;
+
+            bgPicker.querySelectorAll('.bg-tile').forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-checked', 'false');
+            });
+            tile.classList.add('active');
+            tile.setAttribute('aria-checked', 'true');
+            bgPicker.classList.remove('upload-active');
+
+            updatePreview();
+        });
+
+        bgPicker.appendChild(tile);
+
+        // Sofort aktivieren: setzt customBgDataUrl über den Click-Handler
+        tile.click();
+    }
+
+    /* ----------------------------------------------------------
        2d. RESET CUSTOM BACKGROUND
        Entfernt das hochgeladene Bild und stellt den Standard-
        Hintergrund wieder her.
@@ -1372,6 +1643,10 @@
     // triggerUpdate = false wenn der Aufrufer selbst updatePreview() aufruft
     function resetCustomBg(triggerUpdate = true) {
         customBgDataUrl = null;
+
+        // --- Custom Upload Background: Kachel aus dem Picker entfernen ---
+        const uploadTile = bgPicker.querySelector('[data-src="__upload__"]');
+        if (uploadTile) uploadTile.remove();
 
         // Picker-Kacheln wieder aktivieren, aktive Kachel wiederherstellen
         bgPicker.classList.remove('upload-active');
@@ -1384,6 +1659,13 @@
         // Reset-Button ausblenden, File-Input leeren
         btnResetUpload.style.display = 'none';
         inputBgUpload.value = '';
+
+        // Upload-Hinweis auf Standardtext zurücksetzen
+        const hintEl = document.getElementById('upload-hint');
+        if (hintEl) {
+            hintEl.classList.remove('warn');
+            hintEl.textContent = 'Empfohlen: Bilder unter 2 MB (für Profil-Speicherung)';
+        }
 
         if (triggerUpdate) updatePreview();
     }
@@ -1527,6 +1809,34 @@
     }
 
     /* ----------------------------------------------------------
+       4b. FILE NAMING
+       Zentrale Funktion für konsistente Dateinamen.
+       Format: teams-bg_vorname-nachname_jobtitle
+       Umlaute werden ersetzt, Sonderzeichen entfernt.
+    ---------------------------------------------------------- */
+
+    // --- File Naming ---
+    function generateFileName({ firstname, lastname, jobtitle } = {}) {
+        const slugify = str => String(str || '')
+            // Umlaute ersetzen (vor toLowerCase, da ß kein Großbuchstabe hat)
+            .replace(/ä/gi, 'ae').replace(/ö/gi, 'oe').replace(/ü/gi, 'ue')
+            .replace(/ß/g,  'ss')
+            .toLowerCase()
+            .replace(/\./g,        '-')   // Punkte → Bindestrich
+            .replace(/\s+/g,       '-')   // Leerzeichen → Bindestrich
+            .replace(/[^a-z0-9-]/g, '');  // alle anderen Zeichen entfernen
+
+        const fn = slugify(firstname) || 'vorname';
+        const ln = slugify(lastname)  || 'nachname';
+        const jt = slugify(jobtitle);
+
+        const parts = ['teams-bg', `${fn}-${ln}`];
+        if (jt) parts.push(jt);
+
+        return parts.join('_');
+    }
+
+    /* ----------------------------------------------------------
        5. DOWNLOAD / EXPORT
        html2canvas rendert #preview in seiner natürlichen Größe
        (1920×1080) — unabhängig vom CSS-Transform der Vorschau.
@@ -1534,29 +1844,12 @@
        unsichtbar außerhalb des Viewports positioniert.
     ---------------------------------------------------------- */
     async function downloadImage() {
-        // Dateiname aus Eingaben zusammensetzen
-        const slugify = str => str
-            .toLowerCase()
-            .replace(/\./g, '-')        // Punkte → Bindestrich (z. B. enthus.blue → enthus-blue)
-            .replace(/\s+/g, '-')       // Leerzeichen → Bindestrich
-            .replace(/[^a-z0-9\-]/g, ''); // alle anderen Sonderzeichen entfernen
-
-        const firstname = slugify(inputFirstname.value.trim() || 'vorname');
-        const lastname  = slugify(inputLastname.value.trim()  || 'nachname');
-        const jobtitle  = slugify(inputJobtitle.value.trim());
-
-        const teamVal    = selectTeam.value;
-        const customText = inputTeamCustom.value.trim();
-        let teamSlug = '';
-        if      (teamVal === 'enthus')      teamSlug = 'enthus';
-        else if (teamVal === 'enthus.blue') teamSlug = 'enthus-blue';
-        else if (teamVal === 'custom')      teamSlug = slugify(customText);
-
-        const parts = ['teams-bg', `${firstname}-${lastname}`];
-        if (jobtitle)  parts.push(jobtitle);
-        if (teamSlug)  parts.push(teamSlug);
-
-        const filename = parts.join('_') + '.png';
+        // --- File Naming: zentralen Helper verwenden ---
+        const filename = generateFileName({
+            firstname : inputFirstname.value.trim(),
+            lastname  : inputLastname.value.trim(),
+            jobtitle  : inputJobtitle.value.trim(),
+        }) + '.png';
 
         // Lade-Zustand am Button anzeigen
         btnDownload.classList.add('loading');
@@ -1637,6 +1930,9 @@
         inputBgUpload.value = '';
         selectedBg = DEFAULTS.bg;
         bgPicker.classList.remove('upload-active');
+        // --- Custom Upload Background: Kachel entfernen ---
+        const uploadTileEl = bgPicker.querySelector('[data-src="__upload__"]');
+        if (uploadTileEl) uploadTileEl.remove();
         bgPicker.querySelectorAll('.bg-tile').forEach(tile => {
             const isActive = tile.dataset.src === selectedBg;
             tile.classList.toggle('active', isActive);
@@ -1644,6 +1940,295 @@
         });
 
         updatePreview();
+    }
+
+    /* ----------------------------------------------------------
+       6b. PRESET SYSTEM
+       Speichert / lädt / löscht Nutzerprofile im localStorage.
+       Key: "bg_presets"  |  Format: Array of preset objects
+    ---------------------------------------------------------- */
+
+    const PRESET_KEY = 'bg_presets';
+    const PRESET_MAX = 8;
+
+    // Liest alle gespeicherten Presets sicher aus localStorage
+    function getPresets() {
+        try {
+            return JSON.parse(localStorage.getItem(PRESET_KEY)) || [];
+        } catch {
+            return [];
+        }
+    }
+
+    // Schreibt das Presets-Array zurück in localStorage.
+    // Gibt true zurück wenn erfolgreich, false bei Quota-Fehler.
+    function _savePresets(presets) {
+        try {
+            localStorage.setItem(PRESET_KEY, JSON.stringify(presets));
+            return true;
+        } catch (e) {
+            // QuotaExceededError: häufig bei großen Base64-Bildern
+            if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.code === 22) {
+                showToast('⚠ Speicher voll – bitte zuerst ein Profil löschen');
+            } else {
+                console.error('[Preset] Speichern fehlgeschlagen:', e);
+                showToast('⚠ Profil konnte nicht gespeichert werden');
+            }
+            return false;
+        }
+    }
+
+    // Gibt HTML-gefährliche Zeichen in Nutzertexten aus
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    // --- Preset System: savePreset ---
+    // Speichert den aktuellen Formularstand als neues Profil.
+    function savePreset() {
+        const presets = getPresets();
+
+        if (presets.length >= PRESET_MAX) {
+            showToast(`Max. ${PRESET_MAX} Profile – bitte erst eines löschen`);
+            return;
+        }
+
+        const firstname = inputFirstname.value.trim();
+        const lastname  = inputLastname.value.trim();
+        const jobtitle  = inputJobtitle.value.trim();
+
+        const preset = {
+            id         : Date.now().toString(),
+            firstname,
+            lastname,
+            jobtitle,
+            team       : selectTeam.value,
+            teamCustom : inputTeamCustom.value.trim(),
+            background : customBgDataUrl || selectedBg,
+            isCustomBg : !!customBgDataUrl,
+            // --- File Naming: vorberechneter Dateiname für konsistente Exports ---
+            filename   : generateFileName({ firstname, lastname, jobtitle }),
+            savedAt    : Date.now(),
+        };
+
+        presets.unshift(preset);   // neuestes oben
+        const saved = _savePresets(presets);
+        if (saved) {
+            renderPresets();
+            showToast('✓ Profil gespeichert');
+        }
+    }
+
+    // --- Preset System: loadPreset ---
+    // Setzt alle Felder und den Hintergrund auf den gespeicherten Stand.
+    function loadPreset(presetId) {
+        const preset = getPresets().find(p => p.id === presetId);
+        if (!preset) return;
+
+        // Eingabefelder befüllen
+        inputFirstname.value  = preset.firstname  || '';
+        inputLastname.value   = preset.lastname   || '';
+        inputJobtitle.value   = preset.jobtitle   || '';
+        selectTeam.value      = preset.team       || '';
+        inputTeamCustom.value = preset.teamCustom || '';
+        groupTeamCustom.style.display = preset.team === 'custom' ? '' : 'none';
+
+        // Hintergrund wiederherstellen
+        if (preset.isCustomBg && preset.background) {
+            // Eigenes Bild: Upload-Kachel erzeugen und aktivieren
+            customBgDataUrl = preset.background;
+            upsertUploadTile(customBgDataUrl);
+            btnResetUpload.style.display = '';
+        } else {
+            // Preset-Kachel: ggf. Upload aufräumen, dann auswählen
+            if (customBgDataUrl) resetCustomBg(false);
+            setSelectedBg(preset.background || DEFAULTS.bg);
+        }
+
+        updatePreview();
+        showToast('↩ Profil geladen');
+    }
+
+    // --- Preset System: deletePreset ---
+    // Entfernt ein Profil aus localStorage und aktualisiert die Liste.
+    function deletePreset(presetId) {
+        const presets = getPresets().filter(p => p.id !== presetId);
+        _savePresets(presets);
+        renderPresets();
+        showToast('🗑 Profil gelöscht');
+    }
+
+    // --- Preset System: renderPresets ---
+    // Baut die Preset-Liste im UI neu auf (wird nach jeder Änderung aufgerufen).
+    function renderPresets() {
+        const presetList = document.getElementById('preset-list');
+        const presets    = getPresets();
+
+        if (!presets.length) {
+            presetList.style.display = 'none';
+            presetList.innerHTML     = '';
+            return;
+        }
+
+        presetList.style.display = '';
+
+        // Thumbnail-Hintergrund NICHT im HTML-String setzen (fragil bei Base64, langsam).
+        // Stattdessen: data-preset-id als Anker, background-image per JS direkt auf dem Element.
+        presetList.innerHTML = '<hr class="preset-divider">' + presets.map(preset => {
+            const fullName = [preset.firstname, preset.lastname].filter(Boolean).join(' ') || 'Kein Name';
+            const meta     = preset.jobtitle || (preset.isCustomBg ? 'Eigenes Bild' : '');
+
+            return `<div class="preset-item" data-id="${escapeHtml(preset.id)}" title="Klicken zum Laden">
+                <div class="preset-thumb" data-preset-id="${escapeHtml(preset.id)}"></div>
+                <div class="preset-info">
+                    <div class="preset-name">${escapeHtml(fullName)}</div>
+                    ${meta ? `<div class="preset-meta">${escapeHtml(meta)}</div>` : ''}
+                </div>
+                <button class="preset-delete" data-delete-id="${escapeHtml(preset.id)}" title="Profil löschen" aria-label="Profil löschen">&times;</button>
+            </div>`;
+        }).join('');
+
+        // Thumbnails per JS setzen — sicher für beliebige URLs inkl. Data-URLs
+        presetList.querySelectorAll('.preset-thumb[data-preset-id]').forEach(thumb => {
+            const preset = presets.find(p => p.id === thumb.dataset.presetId);
+            if (preset && preset.background) {
+                thumb.style.backgroundImage = `url('${preset.background}')`;
+            }
+        });
+
+        // Klick auf Eintrag = Laden; Klick auf × = Löschen
+        presetList.querySelectorAll('.preset-item').forEach(item => {
+            item.addEventListener('click', e => {
+                if (e.target.closest('.preset-delete')) return;
+                loadPreset(item.dataset.id);
+            });
+        });
+        presetList.querySelectorAll('.preset-delete').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                deletePreset(btn.dataset.deleteId);
+            });
+        });
+    }
+
+    // --- Preset System: showToast ---
+    // Zeigt kurzes visuelles Feedback unten auf dem Bildschirm.
+    let _toastTimer = null;
+    function showToast(msg) {
+        const toast = document.getElementById('preset-toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(_toastTimer);
+        _toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    /* ----------------------------------------------------------
+       6c. EXPORT / IMPORT
+       Exportiert alle gespeicherten Profile als JSON-Datei.
+       Importiert Profile aus einer JSON-Datei (Merge-Strategie:
+       bestehende IDs werden übersprungen, neue werden vorne eingefügt).
+    ---------------------------------------------------------- */
+
+    // --- Export / Import: exportPresets ---
+    function exportPresets() {
+        const presets = getPresets();
+        if (!presets.length) {
+            showToast('Keine Profile zum Exportieren vorhanden');
+            return;
+        }
+
+        // --- File Naming: Dateiname spiegelt Inhalt wider ---
+        // Ein Preset → Namen verwenden; mehrere → Datum als Fallback
+        let baseName;
+        if (presets.length === 1) {
+            baseName = generateFileName(presets[0]);
+        } else {
+            const first = presets[0];
+            const hasName = (first.firstname || first.lastname);
+            baseName = hasName
+                ? generateFileName(first)
+                : `teams-bg_presets_${new Date().toISOString().slice(0, 10)}`;
+        }
+
+        const json = JSON.stringify(presets, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url  = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href     = url;
+        link.download = baseName + '.json';
+        link.click();
+        URL.revokeObjectURL(url);
+        showToast(`📥 ${presets.length} Profil(e) exportiert`);
+    }
+
+    // --- Export / Import: importPresets ---
+    // Liest eine JSON-Datei ein, validiert sie und merged neue Profile.
+    function importPresets(file) {
+        if (!file) return;
+
+        // Dateityp prüfen (MIME + Dateiendung als Fallback)
+        const isJson = file.type === 'application/json' || file.name.endsWith('.json');
+        if (!isJson) {
+            showToast('⚠ Bitte eine JSON-Datei auswählen');
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            try {
+                const data = JSON.parse(e.target.result);
+
+                if (!Array.isArray(data)) {
+                    showToast('⚠ Ungültiges Format – kein Array');
+                    return;
+                }
+
+                // Validierung: jedes Objekt braucht mindestens id + einen Namens-/BG-Eintrag
+                const valid = data.filter(p =>
+                    p && typeof p === 'object' &&
+                    typeof p.id === 'string' && p.id.length > 0 &&
+                    ('firstname' in p || 'lastname' in p || 'background' in p)
+                );
+
+                if (!valid.length) {
+                    showToast('⚠ Keine gültigen Profile in der Datei');
+                    return;
+                }
+
+                // Merge: vorhandene IDs überspringen, neue vorne einfügen
+                const existing    = getPresets();
+                const existingIds = new Set(existing.map(p => p.id));
+                const toAdd       = valid.filter(p => !existingIds.has(p.id));
+
+                if (!toAdd.length) {
+                    showToast('Alle Profile bereits vorhanden');
+                    return;
+                }
+
+                // Limit einhalten: älteste verwerfen wenn nötig
+                const merged = [...toAdd, ...existing].slice(0, PRESET_MAX);
+                const saved  = _savePresets(merged);
+                if (saved) {
+                    renderPresets();
+                    showToast(`✓ ${toAdd.length} Profil(e) importiert`);
+                }
+
+            } catch (err) {
+                console.error('[Import] Fehler:', err);
+                showToast('⚠ Datei konnte nicht gelesen werden');
+            }
+        };
+
+        reader.onerror = function () {
+            showToast('⚠ Datei konnte nicht geöffnet werden');
+        };
+
+        reader.readAsText(file);
     }
 
     /* ----------------------------------------------------------
@@ -1694,6 +2279,23 @@
     btnDownload.addEventListener('click', downloadImage);
     btnReset.addEventListener('click',    resetForm);
 
+    // --- Preset System: Profil speichern ---
+    document.getElementById('btn-save-preset').addEventListener('click', savePreset);
+
+    // --- Export / Import ---
+    document.getElementById('btn-export-presets').addEventListener('click', exportPresets);
+
+    document.getElementById('btn-import-presets').addEventListener('click', () => {
+        document.getElementById('input-preset-import').click();
+    });
+
+    document.getElementById('input-preset-import').addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            importPresets(this.files[0]);
+            this.value = '';  // zurücksetzen, damit dieselbe Datei erneut importierbar ist
+        }
+    });
+
     // Changelog öffnen / schließen
     btnVersion.addEventListener('click',        openChangelog);
     btnChangelogClose.addEventListener('click', closeChangelog);
@@ -1725,6 +2327,9 @@
 
     updatePreview();
     scalePreview();
+
+    // --- Preset System: gespeicherte Profile beim Laden anzeigen ---
+    renderPresets();
 
     /* ----------------------------------------------------------  DISCLAIMER START
        DISCLAIMER
@@ -1770,5 +2375,9 @@
     /* DISCLAIMER END ---------------------------------------------------------- */
 
     </script>
+
+    <!-- Preset-Toast (Feedback-Overlay) — per JS gesteuert -->
+    <div id="preset-toast" role="status" aria-live="polite"></div>
+
 </body>
 </html>
