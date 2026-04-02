@@ -3,9 +3,8 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Status](https://img.shields.io/badge/status-showcase-success)
 
-Ein interner Generator für professionelle Microsoft Teams Hintergründe im Corporate Design von enthus.
+Ein interner Generator für Microsoft Teams Hintergründe im Corporate Design von enthus.
 
-Erstelle in wenigen Sekunden personalisierte Hintergrundbilder mit Name, Rolle und Branding – optimiert für Meetings, Präsentationen und Remote Work.
 
 ---
 
