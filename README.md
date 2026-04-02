@@ -1,88 +1,63 @@
 # 🎨 Teams Background Generator
 
-![Version](https://img.shields.io/badge/version-0.9.5-blue)
-![Status](https://img.shields.io/badge/status-active-success)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Status](https://img.shields.io/badge/status-showcase-success)
 
 Ein interner Generator für professionelle Microsoft Teams Hintergründe im Corporate Design von enthus.
 
 Erstelle in wenigen Sekunden personalisierte Hintergrundbilder mit Name, Rolle und Branding – optimiert für Meetings, Präsentationen und Remote Work.
 
-> ⚠️ **Hinweis**  
-> Dieses Tool wurde eigenständig zu Lern- und Demonstrationszwecken entwickelt und ist aktuell kein offiziell freigegebenes Produkt.  
-> Eine mögliche Abstimmung und Bereitstellung über die Corporate IT erfolgt zu einem späteren Zeitpunkt.
+---
 
+## ⚠️ Hinweis
+
+Dieses Tool wurde eigenständig und größtenteils in der Freizeit zu Lern- und Demonstrationszwecken entwickelt.  
+Es handelt sich aktuell nicht um ein offiziell freigegebenes Produkt.
+
+Das Projekt wird kontinuierlich weiterentwickelt und optimiert.  
+Eine mögliche offizielle Abstimmung und Bereitstellung erfolgt zu einem späteren Zeitpunkt.
+
+**Feedback und Verbesserungsvorschläge sind willkommen.**
 
 ---
 
-## 🚀 Features
+## Features
 
 - Live-Vorschau (WYSIWYG)
 - Export als PNG (1920 × 1080 px)
 - Automatische Skalierung langer Namen
 - Hintergrundauswahl mit Mini-Vorschau
 - Upload eigener Hintergründe
-- Team-/Brand-Anzeige (z. B. *enthus.blue*)
+- Presets speichern / laden / löschen
+- Export & Import von Profilen (JSON)
+- Brand-/Team-Anzeige (z. B. *enthus.blue*)
+- Brand-Farb-Toggle (für bessere Lesbarkeit)
 - Dark Mode
-- Integriertes Changelog
-- Presets / Profile speichern, laden und löschen
-- Export & Import von Profilen (JSON)
+- Tooltip-System & Micro-UX
+- Integrierter Changelog
 
 ---
 
-## 🗺️ Roadmap
+##  Roadmap
 
-### ✅ Bereits umgesetzt
+###  Nächste Schritte
 
-### v0.9.5 (aktueller Stand)
-- Preset-System (Speichern, Laden, Löschen)
-- Export & Import von Profilen (JSON)
-- Eigene Hintergrundbilder werden korrekt in Presets gespeichert
-- Upload-Bild wird als auswählbare Kachel angezeigt
-- Einheitliches Dateinamen-System (Download & Presets)
-- Verbesserte Upload-Hinweise (bezogen auf Profil-Speicherung)
-- Fehlerbehandlung für Speicherlimits (localStorage)
-- Allgemeine UX-Verbesserungen
-
-#### v0.9.3
-- Export-Logik verbessert (html2canvas stabilisiert)
-- Dateinamen-Generierung optimiert (Slugify)
-- Fehlerhandling beim Download verbessert
-
-#### v0.9.2
-- Transparenz des Namens-Overlays (bg_name.png) optimiert
-- Visuelles Feintuning
-
-#### v0.9.1
-- Auto-Scaling für Namen (dynamische Schriftgröße)
-- Verhindert Überlauf bei langen Namen
-
----
-
-### 🔜 In Planung
-
-- ✨ UX Verbesserungen und Weitere UX Verbesserungen (Animationen, Feedback)  
-- 🎨 Hintergründe final abstimmen  
-
----
-
-### 🧪 Zukünftige Erweiterungen
-
+- 🎨 Weitere Hintergründe (final abgestimmt)
+- ✨ Feinschliff UI / Animationen
 - 🖥️ Desktop Wallpaper Mode (4K / Ultrawide)
 - 📐 Flexible Formate
-- 🧠 Smart Layout
 
 ---
 
-## 🛠️ Technologie
+##  Technologie
 
 - HTML / CSS / Vanilla JavaScript
 - html2canvas für PNG-Export
 - Keine Backend-Abhängigkeiten
-- localStorage für Presets
 
 ---
 
-## 🌐 Deployment
+##  Deployment
 
 - GitHub Pages
 - Netlify
@@ -90,22 +65,16 @@ Erstelle in wenigen Sekunden personalisierte Hintergrundbilder mit Name, Rolle u
 
 ---
 
-## 📦 Nutzung
+##  Nutzung
 
 1. Name und Rolle eingeben  
 2. Hintergrund auswählen oder hochladen  
 3. Vorschau prüfen  
-4. Bild herunterladen  
+4. Bild herunterladen
+5. ggf. Profil speichern und das nächste Mal wieder verwenden 
 
 ---
 
-## 📌 Hinweis
-
-Für den Einsatz in Unternehmensumgebungen (z. B. SharePoint) kann es Einschränkungen beim direkten Laden von HTML-Dateien geben.  
-In diesem Fall wird empfohlen, das Tool extern zu hosten und per Embed einzubinden.
-
----
-
-## 📄 Lizenz
+##  Lizenz
 
 Internes Projekt – Nutzung im Kontext von enthus.
