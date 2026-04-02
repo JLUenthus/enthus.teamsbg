@@ -1,4 +1,4 @@
-# 🎨 Teams Background Generator
+# Teams Background Generator
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Status](https://img.shields.io/badge/status-showcase-success)
