@@ -343,11 +343,11 @@
           der CSS-Wert ist der Ausgangswert für den Reset. */
 		#preview-firstname,
 		#preview-lastname {
-			font-size: 84px;
-			font-weight: 900;
+			font-size: 72px;
+			font-weight: 800;
 			color: var(--deep-blue);
-			line-height: 1.02;
-			letter-spacing: -0.02em;
+			line-height: 1.05;
+			letter-spacing: -0.015em;
 			word-break: normal;
 			white-space: normal;
 			overflow: visible;
@@ -355,14 +355,14 @@
 
 		/* Abstand zwischen Name und Titel */
 		#preview-lastname {
-			margin-bottom: 16px;
+			margin-bottom: 20px;
 		}
 
 		/* Job title */
 		#preview-jobtitle {
-			font-size: 30px;
+			font-size: 26px;
 			font-weight: 600;
-			margin-top: 10px;
+			margin-top: 8px;
 			color: var(--deep-blue);
 			letter-spacing: -0.01em;
 			opacity: 0.85;
@@ -371,19 +371,15 @@
 
 		/* Team / Brand */
 		#preview-team {
-			font-size: 30px;
+			font-size: 26px;
 			font-weight: 600;
-			margin-top: 6px;
-			color: var(--deep-blue);
+			margin-top: 4px;
+			color: #0b1f4b;
 			letter-spacing: -0.01em;
-			opacity: 0.85;
+			opacity: 0.9;
 			word-break: normal;
 			display: none;
 		}
-		#preview-team {
-            /* color: #9fb4ff; */ /* CI-Farbe aktuell deaktiviert wegen Lesbarkeit */
-            color: #0b1f4b;
-}
 
         /* --- Company Logo (top right) --- */
         #preview-logo {
@@ -396,7 +392,32 @@
             object-fit: contain;
             z-index: 2;
         }
+        .blue {
+            color: #37ACD6;
+            font-weight: 600;
+            opacity: 1;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
 
+        /* Brand-Farb-Toggle Checkbox */
+        .checkbox-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--deep-blue);
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .checkbox-inline input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+            cursor: pointer;
+            accent-color: var(--deep-blue);
+        }
+        body.dark .checkbox-inline { color: #c5cde8; }
         /* ============================================================
            BG IMAGE PICKER
         ============================================================ */
@@ -1065,6 +1086,11 @@
                         placeholder="z. B. Cloud &amp; Infrastructure"
                     >
                 </div>
+
+                <label class="checkbox-inline" id="group-brand-color" style="display:none;">
+                    <input type="checkbox" id="toggle-brand-color">
+                    Brand-Farbe hervorheben (enthus<span style="color:#37ACD6;">.blue</span>)
+                </label>
             </div>
 
             <!-- Hintergrundauswahl -->
@@ -1737,8 +1763,15 @@
         }
 
         // Team / Brand aktualisieren
-        const teamVal    = selectTeam.value;
-        const customText = inputTeamCustom.value.trim();
+        const teamVal      = selectTeam.value;
+        const customText   = inputTeamCustom.value.trim();
+        const useBrandColor = document.getElementById('toggle-brand-color').checked;
+        const brandColorGroup = document.getElementById('group-brand-color');
+
+        // Checkbox nur bei enthus.blue anzeigen
+        if (brandColorGroup) {
+            brandColorGroup.style.display = (teamVal === 'enthus.blue') ? '' : 'none';
+        }
 
         if (!teamVal) {
             previewTeam.style.display = 'none';
@@ -1747,7 +1780,11 @@
             previewTeam.textContent   = 'enthus';
         } else if (teamVal === 'enthus.blue') {
             previewTeam.style.display = 'block';
-            previewTeam.innerHTML     = 'enthus.<span class="blue">blue</span>';
+            if (useBrandColor) {
+                previewTeam.innerHTML = 'enthus<span class="blue">.blue</span>';
+            } else {
+                previewTeam.textContent = 'enthus.blue';
+            }
         } else if (teamVal === 'custom') {
             if (customText) {
                 previewTeam.style.display = 'block';
@@ -1777,13 +1814,13 @@
        html2canvas liest computed styles → Export unverändert korrekt.
     ---------------------------------------------------------- */
     function fitNameText() {
-        const MAX_SIZE   = 84;    // px — Ausgangswert, identisch zum CSS
+        const MAX_SIZE   = 72;    // px — Ausgangswert, identisch zum CSS
         const MIN_SIZE   = 36;    // px — untere Grenze
         const STEP       = 2;     // px — Schrittweite je Iteration
         const MAX_ITER   = 50;    // Sicherheitslimit gegen Endlosschleife
         const MAX_NAME_H = 400;   // px — max. kombinierte Höhe Vorname + Nachname
 
-        // Auf Maximalwert zurücksetzen bevor gemessen wird
+        // Auf Maximalwert zurücksetzen bevor gemessen wird (MAX_SIZE = 72px)
         previewFirstname.style.fontSize = MAX_SIZE + 'px';
         previewLastname.style.fontSize  = MAX_SIZE + 'px';
 
@@ -2274,6 +2311,7 @@
     inputLastname.addEventListener('input',     updatePreview);
     inputJobtitle.addEventListener('input',     updatePreview);
     inputTeamCustom.addEventListener('input',   updatePreview);
+    document.getElementById('toggle-brand-color').addEventListener('change', updatePreview);
 
     // Aktions-Buttons
     btnDownload.addEventListener('click', downloadImage);
