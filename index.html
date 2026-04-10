@@ -160,6 +160,15 @@
             transition: border-color 0.18s, box-shadow 0.18s;
             appearance: auto;
         }
+        /* Slider Styling */
+        #input-name-bg-opacity {
+            accent-color: #37ACD6;
+            cursor: pointer;
+        }
+
+#input-name-bg-opacity:hover {
+    opacity: 0.9;
+}
         input[type="text"]:focus,
         select:focus {
             border-color: #37ACD6;
@@ -1180,6 +1189,21 @@
                 <div class="card-title">Hintergrund</div>
 
                 <div class="form-group">
+                    <label for="input-name-bg-opacity">
+                        Name-Hintergrund Transparenz
+                        <span id="label-name-bg-opacity" style="font-weight:400; color:var(--deep-blue-light); margin-left:6px;">65%</span>
+                    </label>
+                    <input
+                        type="range"
+                        id="input-name-bg-opacity"
+                        min="0.2"
+                        max="0.9"
+                        step="0.05"
+                        value="0.65"
+                    >
+                </div>
+
+                <div class="form-group">
                     <label>Hintergrundbild</label>
                     <!-- Kacheln werden per JS aus BG_OPTIONS gebaut -->
                     <div id="bg-picker" class="bg-picker" role="radiogroup" aria-label="Hintergrundbild auswählen"></div>
@@ -1393,6 +1417,11 @@
                 <button class="changelog-modal-close" id="btn-changelog-close" aria-label="Schließen">&times;</button>
             </div>
             <div class="changelog-content" id="changelog-content">
+            <h3>v1.0.1</h3>   
+            <ul>
+            <li>Name-Hintergrund Transparenz (Slider) UX verbessert</li>
+            <li></li>Kleine UI- und Styling-Optimierungen</li>
+            </ul>
             <h3>v1.0.0</h3>
             <ul>
             <li>Erste stabile Version (Showcase-ready)</li>
@@ -1528,7 +1557,7 @@
        0. APP-VERSION
        Zentrale Versionskonstante — nur hier ändern.
     ---------------------------------------------------------- */
-    const APP_VERSION = '1.0.0';
+    const APP_VERSION = '1.0.1';
 
     /* ----------------------------------------------------------
        1. ELEMENT-REFERENZEN
@@ -1560,6 +1589,8 @@
     const previewLastname  = document.getElementById('preview-lastname');
     const previewJobtitle  = document.getElementById('preview-jobtitle');
     const previewTeam      = document.getElementById('preview-team');
+    const inputNameBgOpacity  = document.getElementById('input-name-bg-opacity');
+    const labelNameBgOpacity  = document.getElementById('label-name-bg-opacity');
 
     /* ----------------------------------------------------------
        2. STANDARDWERTE (für Reset)
@@ -1898,6 +1929,9 @@
             }
         }
 
+        // Name-Hintergrund Transparenz setzen
+        document.getElementById('preview-name-bg').style.opacity = inputNameBgOpacity.value;
+
         // Schriftgröße des Namens anpassen (nach dem Setzen der Texte)
         fitNameText();
     }
@@ -2148,11 +2182,12 @@
             jobtitle,
             team       : selectTeam.value,
             teamCustom : inputTeamCustom.value.trim(),
-            background : customBgDataUrl || selectedBg,
-            isCustomBg : !!customBgDataUrl,
+            background     : customBgDataUrl || selectedBg,
+            isCustomBg     : !!customBgDataUrl,
+            nameBgOpacity  : inputNameBgOpacity.value,
             // --- File Naming: vorberechneter Dateiname für konsistente Exports ---
-            filename   : generateFileName({ firstname, lastname, jobtitle }),
-            savedAt    : Date.now(),
+            filename       : generateFileName({ firstname, lastname, jobtitle }),
+            savedAt        : Date.now(),
         };
 
         presets.unshift(preset);   // neuestes oben
@@ -2188,6 +2223,11 @@
             if (customBgDataUrl) resetCustomBg(false);
             setSelectedBg(preset.background || DEFAULTS.bg);
         }
+
+        if (preset.nameBgOpacity) {
+            inputNameBgOpacity.value = preset.nameBgOpacity;
+        }
+        labelNameBgOpacity.textContent = Math.round(inputNameBgOpacity.value * 100) + '%';
 
         updatePreview();
         showToast('↩ Profil geladen');
@@ -2414,6 +2454,10 @@
     inputJobtitle.addEventListener('input',     updatePreview);
     inputTeamCustom.addEventListener('input',   updatePreview);
     document.getElementById('toggle-brand-color').addEventListener('change', updatePreview);
+    inputNameBgOpacity.addEventListener('input', () => {
+        labelNameBgOpacity.textContent = Math.round(inputNameBgOpacity.value * 100) + '%';
+        updatePreview();
+    });
 
     // Aktions-Buttons
     btnDownload.addEventListener('click', downloadImage);
@@ -2465,6 +2509,7 @@
     // Theme-State mit aria-pressed synchronisieren (Klasse ggf. schon via Inline-Script gesetzt)
     applyTheme(document.body.classList.contains('dark'));
 
+    labelNameBgOpacity.textContent = Math.round(inputNameBgOpacity.value * 100) + '%';
     updatePreview();
     scalePreview();
 
