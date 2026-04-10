@@ -1,6 +1,6 @@
 # Teams Background Generator
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.1-blue)
 ![Status](https://img.shields.io/badge/status-showcase-success)
 
 Ein interner Generator für Microsoft Teams Hintergründe im Corporate Design von enthus.
